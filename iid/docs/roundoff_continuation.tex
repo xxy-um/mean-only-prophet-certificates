@@ -1,0 +1,366 @@
+% Numerical continuation proof for the frozen IID verifier.
+% Intended to follow the exact-arithmetic pruning and monotonicity lemmas.
+\subsection{Certified evaluation of the continuation terms}
+\label{sec:certificate-continuation-roundoff}
+
+This subsection concerns the frozen instance with $N_t=640$, state knots
+that are integer multiples of $2^{-30}$, and finite rate endpoints at most
+$8192$. It justifies the continuation calculations in
+\texttt{verify.cpp}, including the tests that return a zero continuation.
+Recall the rounding allowances
+\[
+ \varepsilon_{\mathrm{in}}=2^{-48},\qquad
+ \varepsilon_{\mathrm{ar}}=2^{-32}
+       =65536\varepsilon_{\mathrm{in}},\qquad
+ \mathfrak u=2^{-53}=\varepsilon_{\mathrm{in}}/32.
+\]
+The code calls the first two quantities \texttt{eta} and \texttt{eps}.
+All floating-point operations below are binary64 operations in
+round-to-nearest mode with gradual underflow (no flush-to-zero or
+denormals-are-zero mode), without contraction or reassociation. We write
+$\operatorname{fl}$ for the result of one such operation. The usual
+bound, also valid when its result is subnormal, is
+\begin{equation}
+ |\operatorname{fl}(z)-z|
+ \le \mathfrak u|z|+2^{-1075}.
+ \label{eq:certificate-fp-model}
+\end{equation}
+None of the operations considered below overflows. The displayed bounds
+retain ample strict slack for the additive term in
+\eqref{eq:certificate-fp-model}; in particular, a positive state coordinate
+satisfies $y\ge 2^{-30}$, and
+$2^{-1075}<2^{-990}\varepsilon_{\mathrm{in}}y$.
+
+\paragraph{Exact quantities and validated inputs.}
+Put $\Delta=1/640$ and $t=k\Delta$, where $0\le k<640$.
+At a nonterminal state, $0\le x<y\le1$.
+The divisions that form $x$ and $y$ from the integer knots and $2^{30}$
+are exact. Write $b$ for the exact drop rate on this time interval and
+$D=1-\theta(t)$. The input validator establishes
+\[
+ \tfrac14<b<2,\qquad \tfrac{17}{20}<c<\tfrac9{10},\qquad
+ 0\le D\le1.
+\]
+For a finite exact endpoint $r\in[0,8192]$, define
+\[
+ E(r)=e^{-\Delta r},\quad
+ I_r=\int_0^\Delta e^{-rs}\,ds.
+\]
+Thus $0<E(r)\le1$, $0<I_r\le\Delta$, and $0\le (r+e^{-r}-1)\le8192$.
+The frozen values of $b,c,D,r,E(r),I_r,(r+e^{-r}-1)$ differ from these exact
+quantities by less than $\varepsilon_{\mathrm{in}}$ in absolute value.
+The source entry \texttt{vv[h]} is the frozen approximation of
+$r+e^{-r}-1$. Both arrays \texttt{bs} and \texttt{bl} approximate the same exact $b$.
+The frozen $\widehat\Delta$ satisfies the stronger relative bound
+\[
+ |\widehat\Delta-\Delta|<\Delta\varepsilon_{\mathrm{in}}.
+\]
+The computed $\widehat t=\operatorname{fl}(k\widehat\Delta)$ consequently
+satisfies
+\begin{equation}
+ |\widehat t-t|
+ \le k\Delta\varepsilon_{\mathrm{in}}
+   +\mathfrak u k\Delta(1+\varepsilon_{\mathrm{in}})+2^{-1075}
+ <2\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-time-error}
+\end{equation}
+Input validation uses rational enclosures; these input-error assumptions
+therefore do not assume accuracy of a platform exponential routine.
+
+Recall the exact continuation quantities
+\begin{align*}
+ \varphi(r)&=1-y+y\bigl[t+I_r+E(r)(1-t-\Delta)\bigr],\\
+ y(r)&=\frac{yE(r)}{\varphi(r)},\qquad
+ \rho(r)=\frac{x}{y}+\frac{b\Delta (r+e^{-r}-1)}c,\\
+ \widetilde x(r)&=y(r)\rho(r),\qquad
+ x(r)=\min\{y(r),\widetilde x(r)\}.
+\end{align*}
+We will use
+\begin{equation}
+ E(r)\le\varphi(r)\le1,
+ \qquad 0\le y(r)\le1.
+ \label{eq:certificate-phi-range}
+\end{equation}
+For the lower inequality, subtract $E(r)$ from $\varphi(r)$ and use
+$I_r\ge\Delta E(r)$; for the upper inequality use
+$I_r\le\Delta$ and $t+\Delta\le1$.
+
+\paragraph{Elementary operations used by the guards.}
+Here and below an intermediate is evaluated in the order prescribed by
+the source. Repeated application of
+\eqref{eq:certificate-fp-model} gives the following bounds. The table
+also records sufficient estimates for each operation, so that no
+unquantified error-propagation assertion is needed. Error bounds in its
+last column are multiples of $\varepsilon_{\mathrm{in}}$.
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Computed intermediate & Exact target & Error bound\\
+\hline
+$\operatorname{fl}(\widehat b\widehat\Delta)$
+ &$b\Delta$ &$4\Delta$\\
+$\operatorname{fl}(\operatorname{fl}(\widehat b\widehat\Delta)\texttt{vv[h]})$
+ &$b\Delta (r+e^{-r}-1)$ &$54$\\
+$\operatorname{fl}(y\widehat b)$ &$yb$ &$9y/8$\\
+$\operatorname{fl}(\operatorname{fl}(y\widehat b)\widehat\Delta)$
+ &$yb\Delta$ &$4\Delta y$\\
+$\operatorname{fl}(\operatorname{fl}(\operatorname{fl}(y\widehat b)
+       \widehat\Delta)\texttt{vv[h]})$
+ &$yb\Delta (r+e^{-r}-1)$ &$54y$\\
+$\operatorname{fl}(\widehat c x)$ &$cx$ &$2y$\\
+$\operatorname{fl}(\widehat D-\widehat b)$ &$D-b$ &$3$\\
+$\operatorname{fl}(y\operatorname{fl}(\widehat D-\widehat b))$
+ &$y(D-b)$ &$4y$\\
+\hline
+\end{tabular}
+\end{center}
+For example, the first line follows from
+\[
+ \Delta\varepsilon_{\mathrm{in}}
+ +(2+\varepsilon_{\mathrm{in}})\Delta\varepsilon_{\mathrm{in}}
+ +\mathfrak u(2+\varepsilon_{\mathrm{in}})
+       \Delta(1+\varepsilon_{\mathrm{in}})+2^{-1075}
+ <4\Delta\varepsilon_{\mathrm{in}}.
+\]
+For the second line the propagated input error and the new rounding
+error are at most
+\[
+ 4\Delta\,8192\varepsilon_{\mathrm{in}}
+ +0.004\varepsilon_{\mathrm{in}}
+ +25.61\mathfrak u+2^{-1075}
+ <54\varepsilon_{\mathrm{in}}.
+\]
+The same calculation multiplied by $y$ proves the fifth line.
+The other lines use $|D-b|\le2$, $c<0.9$, and
+$\mathfrak u=\varepsilon_{\mathrm{in}}/32$.
+The final additions in the code therefore give
+\begin{align}
+ |\widehat p-p|&<8\varepsilon_{\mathrm{in}}y,
+ &p&=cx+y(D-b), \label{eq:certificate-p-error}\\
+ |\widehat n(r)-n(r)|&<64\varepsilon_{\mathrm{in}}y,
+ &n(r)&=cx+yb\Delta (r+e^{-r}-1), \label{eq:certificate-n-error}
+\end{align}
+because $|p|\le3y$ and $0\le n(r)\le26.5y$.
+The right-hand side of the leaf clipping test is
+$\widehat n_{\mathrm{clip}}=\operatorname{fl}(\operatorname{fl}(\widehat c y)
+                    +\varepsilon_{\mathrm{ar}}y)$.
+Multiplication by $\varepsilon_{\mathrm{ar}}$ is exact, and
+\begin{equation}
+ |\widehat n_{\mathrm{clip}}-(cy+\varepsilon_{\mathrm{ar}}y)|
+ <2\varepsilon_{\mathrm{in}}y.
+ \label{eq:certificate-clip-threshold-error}
+\end{equation}
+The factor $y$ in both bounds is essential for small state coordinates.
+
+For the node guard the code computes
+$\widehat\rho=\operatorname{fl}(\operatorname{fl}(x/y)
+ +\operatorname{fl}(\widehat\omega/\widehat c))$,
+where $\widehat\omega$ is the second intermediate in the table.
+Since $b\Delta (r+e^{-r}-1)\le25.6$, $(b\Delta (r+e^{-r}-1))/c<31$, and
+$\widehat c>0.84$, division has error at most
+\[
+ \frac{(54+31)\varepsilon_{\mathrm{in}}}{0.84}
+ +32\mathfrak u+2^{-1075}.
+\]
+Including the division $x/y$ and the final addition yields
+\begin{equation}
+ |\widehat\rho-\rho(r)|<128\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-ratio-error}
+\end{equation}
+Likewise, for the product in the upper-endpoint guard,
+\begin{equation}
+ |\operatorname{fl}(\widehat r\widehat\Delta)-r\Delta|
+ <\bigl(0.002+12.8+0.401\bigr)\varepsilon_{\mathrm{in}}
+ <16\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-rate-product-error}
+\end{equation}
+
+\paragraph{Validity of the zero-continuation and range tests.}
+If the leaf test skips interpolation, then $\widehat n(r)\ge\widehat n_{\mathrm{clip}}$.
+Equations \eqref{eq:certificate-n-error} and
+\eqref{eq:certificate-clip-threshold-error} imply
+\[
+ n(r)-cy\ge
+  (\varepsilon_{\mathrm{ar}}-66\varepsilon_{\mathrm{in}})y>0.
+\]
+Thus $\rho(r)\ge1$, the exact successor is on the diagonal, and its
+continuation is zero. If the leaf test instead evaluates the successor,
+the reverse estimates give
+\[
+ \rho(r)<1+
+ \frac{\varepsilon_{\mathrm{ar}}+66\varepsilon_{\mathrm{in}}}{c}
+ <1+2\varepsilon_{\mathrm{ar}}.
+\]
+For the node test, $\widehat\rho\ge1+\varepsilon_{\mathrm{ar}}$ implies
+$\rho(r)>1$ by \eqref{eq:certificate-ratio-error}, so all its descendant
+continuations are zero by the monotonicity of $\rho$.
+Otherwise $\rho(r)<1+2\varepsilon_{\mathrm{ar}}$ again.
+In every case where a lower-endpoint successor is evaluated,
+$(r+e^{-r}-1)\ge r-1$ now implies
+\begin{equation}
+ r\Delta\le\Delta+\frac cb\rho(r)
+ <\frac1{640}+3.6(1+2\varepsilon_{\mathrm{ar}})<4.
+ \label{eq:certificate-successor-rate-range}
+\end{equation}
+For an upper endpoint, the code evaluates its successor only if
+$\operatorname{fl}(\widehat r\widehat\Delta)
+ \le4-\varepsilon_{\mathrm{ar}}$.
+Equation \eqref{eq:certificate-rate-product-error} proves $r\Delta<4$
+in this case as well. Otherwise the node calculation uses the valid
+lower bound zero for that successor's $y$-coordinate.
+
+\paragraph{Errors in $\varphi$ and the successor coordinates.}
+The following table follows the parenthesization of
+\texttt{ph}. Its error bounds are again in units of
+$\varepsilon_{\mathrm{in}}$.
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Computed intermediate & Exact target & Error bound\\
+\hline
+$\operatorname{fl}(\operatorname{fl}(1-\widehat t)-\widehat\Delta)$
+ &$1-t-\Delta$ &$3$\\
+$\operatorname{fl}(\widehat E\widehat K)$
+ &$E(1-t-\Delta)$ &$5$\\
+$\operatorname{fl}(\widehat t+\widehat I)$ &$t+I_r$ &$4$\\
+$\operatorname{fl}(\widehat T+\widehat E\widehat K)$
+ &$t+I_r+E(1-t-\Delta)$ &$10$\\
+$\operatorname{fl}(y\widehat Z)$ &$y[t+I_r+E(1-t-\Delta)]$ &$11y$\\
+\hline
+\end{tabular}
+\end{center}
+In the fourth line $\widehat E\widehat K$ denotes the already rounded
+second-line product. Here $\widehat K,\widehat T,\widehat Z$ denote
+the corresponding previously computed quantities.
+For completeness, the first-line estimate is bounded by
+$2+\Delta+(1+\Delta)/32$ in the stated units, with an arbitrarily
+small allowance for $\varepsilon_{\mathrm{in}}$ and the subnormal term;
+the next lines are bounded respectively by
+$3+1+1/32$, $2+1+1/32$, $5+4+1/32$, and
+$10y+y/32$, with the same strict slack.
+The quantity $1-y$ is an exactly representable multiple of $2^{-30}$.
+The last addition thus gives
+\begin{equation}
+ |\widehat\varphi(r)-\varphi(r)|
+ <16\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-phi-error}
+\end{equation}
+
+For every evaluated successor, \eqref{eq:certificate-successor-rate-range}
+and \eqref{eq:certificate-phi-range} give
+$\varphi(r)>e^{-4}>1/64$, hence
+$\widehat\varphi(r)>1/65$.
+The rounded numerator $\widehat a=\operatorname{fl}(y\widehat E)$
+satisfies $|\widehat a-yE|<2\varepsilon_{\mathrm{in}}y$.
+Using $y(r)\le1$, the error before rounding the division is at most
+\[
+ \left|\frac{\widehat a}{\widehat\varphi}-y(r)\right|
+ \le\frac{|\widehat a-yE|+y(r)|\widehat\varphi-\varphi|}
+             {\widehat\varphi}
+ <65(2y+16)\varepsilon_{\mathrm{in}}.
+\]
+The division adds less than $2\mathfrak u+2^{-1075}$, proving
+\begin{equation}
+ |\widehat y(r)-y(r)|<2048\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-successor-y-error}
+\end{equation}
+
+The leaf computes an \emph{unclipped} $x$-coordinate by dividing
+$\operatorname{fl}(\widehat E\widehat n)$ by
+$\operatorname{fl}(\widehat c\widehat\varphi)$.
+Under its evaluation guard, $n=cy\rho<y$ and
+$\widetilde x(r)\le1+2\varepsilon_{\mathrm{ar}}<1.001$.
+Equation \eqref{eq:certificate-n-error} and one multiplication give
+numerator error less than $66\varepsilon_{\mathrm{in}}y$.
+Equation \eqref{eq:certificate-phi-error} gives denominator error less
+than $16\varepsilon_{\mathrm{in}}$, and the computed denominator is
+greater than $1/80$. The same quotient identity therefore bounds the
+error before the final rounding by
+\[
+ 80\bigl(66y+16\cdot1.001\bigr)\varepsilon_{\mathrm{in}}.
+\]
+Including the division rounding yields
+\begin{equation}
+ |\widehat x(r)-\widetilde x(r)|
+ <8192\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-successor-x-error}
+\end{equation}
+
+For a finite upper endpoint that passes its range guard, the node
+instead computes
+$\widehat x_{\mathrm{low}}
+ =\operatorname{fl}(\widehat y(r_+)\min\{1,\widehat\rho(r_-)\})$.
+The map $z\mapsto\min\{1,z\}$ is $1$-Lipschitz.
+Combining \eqref{eq:certificate-ratio-error} and
+\eqref{eq:certificate-successor-y-error}, then allowing one product
+rounding, gives
+\begin{equation}
+ \bigl|\widehat x_{\mathrm{low}}
+    -y(r_+)\min\{1,\rho(r_-)\}\bigr|
+ <4096\varepsilon_{\mathrm{in}}.
+ \label{eq:certificate-node-x-error}
+\end{equation}
+For example, the coefficient of $\varepsilon_{\mathrm{in}}$ is bounded
+by $2048(1+128\varepsilon_{\mathrm{in}})+128+2/32$, which is below
+$4096$. When the upper-endpoint guard is not used, the assigned value
+is exactly zero and needs no floating-point estimate.
+
+\paragraph{Shifted interpolation and multiplication.}
+Let $\widetilde v_{k+1}$ be the ordinary triangular interpolant already
+defined above; its vertex values are stored integers divided by $2^{40}$.
+The monotonicity passes ensure $\widetilde v_{k+1}\le0$, that
+$\widetilde v_{k+1}$ is nonincreasing in its first coordinate and
+nondecreasing in its second coordinate, and that it is zero on the diagonal.
+The interpolation routine rounds $\widehat y+\varepsilon_{\mathrm{ar}}$
+up to a multiple of $2^{-30}$ and
+$\widehat x-\varepsilon_{\mathrm{ar}}$ down to such a multiple,
+then clips the former to $[0,1]$ and the latter below at zero.
+The additions incur less than
+$\varepsilon_{\mathrm{in}}/8$ error; multiplication by $2^{30}$ is
+exact. Equations \eqref{eq:certificate-successor-y-error}--
+\eqref{eq:certificate-node-x-error} and
+$\varepsilon_{\mathrm{ar}}=65536\varepsilon_{\mathrm{in}}$
+therefore put the integer query above the exact required
+$y$-coordinate and below the exact required $x$-coordinate.
+Clipping at $0$ or $1$ preserves these inequalities.
+
+For a leaf with $\rho(r)<1$, the required $x$-coordinate is
+$\widetilde x(r)=x(r)\le y(r)$, so the queried value is at most
+$\widetilde v_{k+1}(y(r),x(r))$. If the routine returns zero because its integer
+$x$-coordinate is no smaller than its integer $y$-coordinate, these
+coordinate inequalities force the exact successor to be on the
+diagonal; the zero return is then valid. For a leaf with $\rho(r)\ge1$,
+the true continuation is already zero. In this case either a zero
+return or any nonpositive interpolated value is conservative, even
+though the code formed the raw coordinate $\widetilde x(r)$ rather
+than its clipped version.
+The identical argument applies to a node when $\rho(r_-)<1$ and the
+required coordinate is $y(r_+)\rho(r_-)$; when $\rho(r_-)\ge1$, every
+descendant continuation is zero. These are exactly the cases used by
+the exact-arithmetic node bound.
+
+Inside a containing triangle, the code forms nonnegative integer
+barycentric numerators with their exact sum equal to the positive
+denominator, and takes a downward integer quotient. Thus the returned
+integer $v$ satisfies $v/2^{40}\le\widetilde v_{k+1}$ at the integer query. Integer
+range bounds are established separately below.
+
+Finally, the code uses
+\[
+ M=\left\lceil
+     \operatorname{fl}\bigl((\widehat\varphi+
+                       \varepsilon_{\mathrm{ar}})2^{40}\bigr)
+    \right\rceil+1,
+\]
+where the parenthesized addition is rounded once and multiplication
+by $2^{40}$ is exact. Its addition error is less than
+$\varepsilon_{\mathrm{in}}/8$. Consequently
+\[
+ \varphi\le\frac M{2^{40}}
+ \le\varphi+2\varepsilon_{\mathrm{ar}}+2\cdot2^{-40}.
+\]
+Since $v\le0$, the exact downward quotient used for
+$Mv/2^{40}$ certifies a lower bound on the exact multiplier times
+the required interpolant. This proves the rounding correctness of
+both the leaf continuation and the subtree continuation bound used
+for pruning.

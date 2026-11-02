@@ -1,0 +1,37 @@
+[
+  {
+    "file": "data/threshold40.json",
+    "sha256": "436d6614e9c72e811b49373dacc201b20baed8e595a79f09e327770a4d033ed0",
+    "source_bytes_equal": true
+  },
+  {
+    "file": "data/threshold_slopes.json",
+    "sha256": "bb6db32c572ca4cb9e2ae892e996bcffcdccc6176f91def6eeab60bf0bf2f0d6",
+    "source_bytes_equal": true
+  },
+  {
+    "file": "data/grid1200.json",
+    "sha256": "fabdc4fac78886b0bb493bfc63f3e509db87ccfd00089769f724e878cc54b01a",
+    "source_bytes_equal": true
+  },
+  {
+    "file": "data/grid1200.h",
+    "sha256": "0439df39533b12e40cf0983a30f12d9f7eaf27c02ec929b7eb5a097c6c048cea",
+    "source_bytes_equal": true
+  },
+  {
+    "file": "data/rates_refined_Q131093.json",
+    "sha256": "99b8015e3e40aaf496bfaa325b991bc0a04ab0cd0b9632eab7458ddefaf1f405",
+    "source_bytes_equal": true
+  },
+  {
+    "file": "data/coeff_N640_Q131093.h",
+    "sha256": "78f7f85883cc353edc073e51a90b302b780f5cb89fa6dd90b7dcbccbd235e8f5",
+    "source_bytes_equal": true
+  },
+  {
+    "file": "data/grids/grid1200.txt",
+    "sha256": "f8666245d422f88df99920c0afa221b15ecf02abd7c843c7598579823557fe82",
+    "source_bytes_equal": true
+  }
+]

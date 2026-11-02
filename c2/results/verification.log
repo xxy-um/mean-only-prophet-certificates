@@ -1,0 +1,23 @@
+Appendix C.2 finite dual certificate verification
+Started UTC: 2026-11-02T07:06:33.873088+00:00
+All certificate arithmetic uses exact integers and outward intervals.
+Input checks passed: N=1024, profiles=1014.
+Exact weight numerator sum: 1000000000000.
+Computed maximum rate: 1000000000.
+Evaluated 1/1014 rate profiles.
+Evaluated 127/1014 rate profiles.
+Evaluated 253/1014 rate profiles.
+Evaluated 379/1014 rate profiles.
+Evaluated 505/1014 rate profiles.
+Evaluated 631/1014 rate profiles.
+Evaluated 757/1014 rate profiles.
+Evaluated 883/1014 rate profiles.
+Evaluated 1009/1014 rate profiles.
+Evaluated 1014/1014 rate profiles.
+Computed upper numerator: 1084385539732742468991572064431813102297740351518
+Interval scale / upper denominator: 1461501637330902918203684832716283019655932542976
+Upward-rounded bound: 0.741966695100
+Exact check: U_hat <= 0.741966695100 < U = 0.741967.
+All 1025 coefficient inequalities verified.
+Elapsed seconds (timing only): 24.145624
+PASS

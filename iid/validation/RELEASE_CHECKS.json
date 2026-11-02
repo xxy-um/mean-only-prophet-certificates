@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "checked_utc": "2026-11-02T07:42:59.309210+00:00",
+  "original_files_preserved_byte_for_byte": 43,
+  "original_manifest_entries_verified": 42,
+  "original_archive_preserved_byte_for_byte": true,
+  "pdf_pages": 17,
+  "latex_undefined_references": 0,
+  "latex_overfull_boxes": 0,
+  "latex_warnings": 0,
+  "pdf_visual_review_completed": true,
+  "latex_source_archive_matches_final_sources": true,
+  "local_index_links_checked": 18,
+  "all_local_index_links_resolve": true,
+  "full_640_layer_replay": "validation/FULL_REPRODUCTION.json",
+  "scope": "Release packaging checks; mathematical correctness is addressed in docs/verification.pdf."
+}

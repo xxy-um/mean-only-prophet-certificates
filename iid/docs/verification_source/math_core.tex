@@ -1,0 +1,437 @@
+% Mathematical core of the IID implementation supplement.
+% Requires amsmath, amssymb, amsthm and environments lemma, theorem, proof.
+% Arithmetic lemmas are supplied in a separate fragment.
+
+\section{The original i.i.d. FRLP and its accelerated evaluation}
+\label{sec:cert-iid-math}
+
+This section proves that the accelerated backward evaluator constructs a
+feasible solution of the fixed-coefficient FRLP in Section~3.3 of the paper.
+The mathematical inputs are Lemmas~3.3, A.2, and A.3 of the paper.  The
+additional arguments below justify the evaluation of that same finite LP:
+they do not introduce stronger reward inequalities or replace any of its
+rows.  Arithmetic lower enclosures are established separately below.  In
+particular, every comparison used for pruning must use such an enclosure,
+rather than a rounded estimate without a proved error bound.
+
+\subsection{Fixed data and literal rows}
+\label{sec:cert-iid-rows}
+
+The certificate fixes $N=40$ positive nondecreasing drop rates, $N_t=640$
+time intervals, $N_y=1200$ state subdivisions, and $N_q=131093$ rate
+intervals.  Write $t_k=k/N_t$ and $\Delta=1/N_t$.  The state knots satisfy
+\[
+  0=y_0=x_0<y_1=x_1<\cdots<y_{N_y}=x_{N_y}=1,
+\]
+and the rate endpoints satisfy
+\[
+  0=r_0<r_1<\cdots<r_{N_q-1}<r_{N_q}=+\infty.
+\]
+All finite endpoints and drop rates are fixed rational inputs.  On each
+state rectangle we use the diagonal from its lower-left to its upper-right
+vertex, retaining only the part of the grid in $0\le x\le y\le1$.
+
+Fix a time $t=t_k$, a state $0\le x<y\le1$, and the constant drop rate $b>0$
+on $[t,t+\Delta]$.  As in Appendix~A.1, let
+\[
+ c=\max_{0\le s\le1}\{b(s)+\theta(s)\}-1>0,\qquad
+ p=cx+y(1-\theta(t)-b),\qquad u=b(1-y+ty).
+\]
+For finite $r\ge0$, put
+\[
+ E(r)=e^{-\Delta r},\qquad
+ I_r=\int_0^\Delta e^{-rs}\,ds
+     =\begin{cases}(1-E(r))/r,&r>0,\\ \Delta,&r=0.\end{cases}
+\]
+The successor quantities in Lemma~A.2, viewed as functions of a finite
+lower endpoint $r$, are
+\begin{align}
+ \varphi(r)&=1-y+y\bigl(t+I_r+E(r)(1-t-\Delta)\bigr),\label{eq:cert-iid-phi}\\
+ y(r)&=\frac{yE(r)}{\varphi(r)},\label{eq:cert-iid-y}\\
+ x(r)&=\min\!\left\{y(r),
+   \frac{E(r)\bigl(cx+yb\Delta(r+e^{-r}-1)\bigr)}{c\varphi(r)}\right\}.
+ \label{eq:cert-iid-x}
+\end{align}
+Here $\varphi(r)>0$ and $0\le x(r)\le y(r)\le1$.
+
+For finite $r$, define the parameters of Lemma~A.3 by
+\begin{align*}
+ C(r)&=\min\{p\Delta,pI_r\},\\
+ \alpha(r)&=ybE(r)\Delta^2+(-p)^+I_r\Delta,\\
+ \beta(r)&=\Delta(u+ybI_r),\qquad z(r)=\beta(r)e^{-r}.
+\end{align*}
+Both $\alpha(r)$ and $\beta(r)$ are positive at a non-diagonal state.
+The maximum of the two unrestricted bounds in Lemma~A.3 is
+\begin{equation}
+ \mathcal H(\alpha,\beta)=
+ \begin{cases}
+ \displaystyle \beta-\frac{\beta^2}{4\alpha},&\beta\le\alpha,\\[4pt]
+ \displaystyle \alpha\left(\frac34+\frac12\log\frac\beta\alpha\right),
+    &\beta>\alpha.
+ \end{cases}
+ \label{eq:cert-iid-free}
+\end{equation}
+Indeed, with $v=\beta/\alpha$, the difference between the quadratic and
+logarithmic expressions, divided by $\alpha$, is
+\[
+ v-\frac{v^2}{4}-\frac34-\frac12\log v.
+\]
+It vanishes at $v=1$ and has derivative $-(v-1)^2/(2v)\le0$.
+This proves the stated choice of branch.  When $z(r)>\alpha(r)/2$, write
+\[
+ J(r)=z(r)+\frac{\alpha(r)r}{2}
+       -\frac{\alpha(r)^2}{24\bigl(z(r)-\alpha(r)/2\bigr)}.
+\]
+For this fixed time and state, suppress the indices $k,i,j$ in the cost coefficient. For the literal rate interval $[r_{h-1},r_h]$, let $a_h$ be the maximum of
+\[
+ \min\{p\Delta,0\},\qquad
+ C(r_h)+\mathcal H\bigl(\alpha(r_h),\beta(r_h)\bigr),\qquad
+ C(r_h)+J(r_h),
+ \]
+where the last term is included only when its guard holds, and the latter
+two terms are omitted when $r_h=+\infty$.  Thus
+$a_{N_q}=\min\{p\Delta,0\}$.  These are exactly the constants specified at
+the end of Appendix~A.1, before numerical lower enclosures are taken.
+
+Let $v_{k+1,i,j}$ be the already fixed next-layer table, and let
+$\widetilde v_{k+1}(y,x)$ denote its ordinary continuous piecewise-affine
+interpolant on the stated triangles.  The right-hand side of the literal
+row indexed by $h$ is
+\begin{equation}
+ \mathcal R_h
+ =a_h+\varphi(r_{h-1})\,
+       \widetilde v_{k+1}\bigl(y(r_{h-1}),x(r_{h-1})\bigr).
+ \label{eq:cert-iid-row}
+\end{equation}
+The current table entry must satisfy $v_{k,i,j}\le\mathcal R_h$ for every
+$h$.  The code's zero-based leaf index $h-1$ uses \texttt{A(h-1)} for the
+continuation and \texttt{B(h)} for the running cost
+(\texttt{verify.cpp}, lines 63--96 and 134).
+
+The evaluator may use a lower bound on $\mathcal R_h$ that is strictly
+smaller than the literal expression.  In particular, omitting an
+applicable lower bound from the maximum defining $a_h$, imposing a
+stronger guard before using $J$, or subtracting a nonnegative allowance
+cannot invalidate a candidate that is required to lie below the literal
+row.  None of these operations changes the target LP.
+
+\subsection{Lowering the numerical table}
+\label{sec:cert-iid-lowering}
+
+The monotonicity of the true functions $V_t$ does not by itself imply
+monotonicity of an arbitrary numerical table.  We enforce the property
+needed below by lowering the newly computed layer, in the following
+order:
+\begin{align*}
+ &i=1,\ldots,N_y,\quad j=i-1,i-2,\ldots,0:
+       &&v_{k,i,j}\leftarrow\min\{v_{k,i,j},v_{k,i,j+1}\};\\
+ &i=1,\ldots,N_y,\quad j=0,\ldots,i-1:
+       &&v_{k,i,j}\leftarrow\min\{v_{k,i,j},v_{k,i-1,j}\}.
+\end{align*}
+Diagonal entries remain zero.  These are the two passes in
+\texttt{lower\_monotone} (lines 158--160).
+
+\begin{lemma}[Feasibility and monotonicity after lowering]
+\label{lem:cert-iid-lowering}
+Suppose the next layer is fixed, the current layer is nonpositive with
+zero diagonal, and every current literal row is satisfied.  The two
+passes preserve those properties and yield
+\[
+ v_{k,i,j}\le v_{k,i,j+1},\qquad
+ v_{k,i,j}\le v_{k,i-1,j}\qquad(0\le j<i\le N_y).
+\]
+Its interpolant is nonpositive, zero on $x=y$, nondecreasing in $x$, and
+nonincreasing in $y$ throughout the triangular state domain.
+\end{lemma}
+\begin{proof}
+Each row constraint for layer $k$ has a current entry only on its left-hand
+side; its right-hand side uses the already fixed layer $k+1$.  Decreasing
+a current entry therefore preserves every such constraint.  The passes
+leave the diagonal unchanged and only decrease nonpositive entries.
+They are applied before any earlier layer is constructed, so there are no
+already constructed constraints from layer $k-1$ to preserve.
+
+The descending order of $j$ in the first pass makes each row
+nondecreasing in $j$.  In the second pass, row $i-1$ has already been
+completed.  The new row $i$ is the pointwise minimum of its previous
+nondecreasing row and the completed nondecreasing row $i-1$, with the
+latter extended by a final zero.  Hence it remains nondecreasing.  Each
+column inequality is imposed against the completed preceding row and
+cannot be changed by a later update.  This proves both displayed
+inequalities.
+
+For the interpolation claim, consider a rectangle with coordinate widths
+$d_y=y_{i+1}-y_i>0$ and $d_x=x_{j+1}-x_j>0$.  On its lower triangle with
+vertices $(y_i,x_j)$, $(y_{i+1},x_j)$, $(y_{i+1},x_{j+1})$, the two
+partial derivatives are
+\[
+ \partial_x\widetilde v_k
+   =\frac{v_{k,i+1,j+1}-v_{k,i+1,j}}{d_x}\ge0,
+ \qquad
+ \partial_y\widetilde v_k
+   =\frac{v_{k,i+1,j}-v_{k,i,j}}{d_y}\le0.
+\]
+On the upper triangle they are
+\[
+ \partial_x\widetilde v_k
+   =\frac{v_{k,i,j+1}-v_{k,i,j}}{d_x}\ge0,
+ \qquad
+ \partial_y\widetilde v_k
+   =\frac{v_{k,i+1,j+1}-v_{k,i,j+1}}{d_y}\le0.
+\]
+Only the lower triangle is present when $i=j$.  Continuity across edges
+extends these monotonicities along any horizontal or vertical segment in
+the domain.  Every interpolated value is a convex combination of
+nonpositive entries, and interpolation along the diagonal uses only
+zero diagonal entries.
+\end{proof}
+
+\subsection{A continuation bound for an entire rate subtree}
+\label{sec:cert-iid-continuation}
+
+A tree node consists of consecutive literal intervals.  Write $r_-$ for
+its first lower endpoint and $r_+$ for its last upper endpoint; $r_-$ is
+finite and $r_+$ may be infinite.  Every lower endpoint occurring in the
+node lies in $[r_-,r_+]$.  Define
+\[
+ \rho(r)=\frac{x}{y}+\frac{b\Delta}{c}(r+e^{-r}-1),
+ \qquad x(r)=y(r)\min\{1,\rho(r)\}.
+\]
+
+\begin{lemma}[Uniform continuation bound]
+\label{lem:cert-iid-continuation}
+Suppose $\widetilde v_{k+1}$ has the properties in
+Lemma~\ref{lem:cert-iid-lowering}.  If $\rho(r_-)\ge1$, every continuation in
+the node is zero.  Otherwise define
+\[
+ y_+=\begin{cases}y(r_+),&r_+<+\infty,\\0,&r_+=+\infty,\end{cases}
+ \qquad x_-=y_+\rho(r_-).
+\]
+For every finite $r\in[r_-,r_+]$,
+\begin{equation}
+ \varphi(r)\widetilde v_{k+1}\bigl(y(r),x(r)\bigr)
+ \ge
+ \varphi(r_-)\widetilde v_{k+1}\bigl(y(r_-),x_-\bigr).
+ \label{eq:cert-iid-node-continuation}
+\end{equation}
+The bound remains valid if $y_+$ is replaced by any certified value in
+$[0,y_+]$, in particular by zero.
+\end{lemma}
+\begin{proof}
+The functions $E(r)$ and $I_r$ are nonincreasing.  Since
+$1-t-\Delta\ge0$, equation~\eqref{eq:cert-iid-phi} shows that
+$\varphi$ is nonincreasing.  Moreover,
+\[
+ \frac{\varphi(r)}{E(r)}
+ =(1-y)e^{\Delta r}
+  +y\left(te^{\Delta r}+\int_0^\Delta e^{rs}\,ds+1-t-\Delta\right)
+\]
+is nondecreasing, so $y(r)=y/(\varphi(r)/E(r))$ is nonincreasing.
+Finally $\rho'(r)=b\Delta(1-e^{-r})/c\ge0$.
+If $\rho(r_-)\ge1$, it follows that $x(r)=y(r)$, where the interpolant is
+zero.
+
+Otherwise $0\le \rho(r_-)<1$.  For every finite $r$ under consideration,
+$y(r)\ge y_+$ and $\min\{1,\rho(r)\}\ge \rho(r_-)$; hence
+$x(r)\ge x_-$.  Also $y(r)\le y(r_-)$, and
+$0\le x_-\le y_+\le y(r_-)$, so the comparison state belongs to the
+domain.  Coordinate monotonicity gives
+\[
+ \widetilde v_{k+1}\bigl(y(r),x(r)\bigr)
+ \ge \widetilde v_{k+1}\bigl(y(r_-),x_-\bigr).
+\]
+Multiplying by $\varphi(r)>0$, and then using
+$\varphi(r)\le\varphi(r_-)$ and the nonpositivity of the right-hand
+interpolated value, proves~\eqref{eq:cert-iid-node-continuation}.
+Replacing $y_+$ by a smaller nonnegative value only decreases $x_-$ and
+therefore weakens this lower bound.
+\end{proof}
+
+This is the exact-arithmetic argument behind \texttt{rectA}
+(lines 98--106).  The implementation uses zero for the far endpoint
+unless its arithmetic guard permits an accurately enclosed division.
+Its coordinate perturbations and multiplier rounding are justified by
+the arithmetic enclosures below; they are not assumptions of exact
+monotonicity for rounded expressions.
+
+\subsection{A running-cost bound for an entire rate subtree}
+\label{sec:cert-iid-cost}
+
+\begin{lemma}[Monotonicity of the free cost bound]
+\label{lem:cert-iid-free}
+For fixed $t,x,y,b$, the functions $C(r)$, $\alpha(r)$, and $\beta(r)$
+are nonincreasing in finite $r\ge0$.  The function
+$\mathcal H(\alpha,\beta)$ is nondecreasing in each positive argument.
+Consequently, if $r_+<+\infty$, then every literal cost in the node is
+at least
+\begin{equation}
+ C(r_+)+\mathcal H\bigl(\alpha(r_+),\beta(r_+)\bigr).
+ \label{eq:cert-iid-node-free}
+\end{equation}
+Every literal cost, including the unbounded leaf, is also at least
+$\min\{p\Delta,0\}$.
+\end{lemma}
+\begin{proof}
+If $p<0$, then $C(r)=p\Delta$ because $I_r\le\Delta$; if $p\ge0$,
+then $C(r)=pI_r$.  Thus $C$ is nonincreasing.  The formulas for $\alpha$
+and $\beta$ are nonnegative linear combinations of $E(r)$, $I_r$, and
+constants, so the same conclusion holds for them.  For $\beta\le\alpha$,
+\[
+ \partial_\alpha \mathcal H=\frac{\beta^2}{4\alpha^2}>0,
+ \qquad \partial_\beta \mathcal H=1-\frac{\beta}{2\alpha}\ge\frac12.
+\]
+For $\beta\ge\alpha$,
+\[
+ \partial_\alpha \mathcal H=\frac14+\frac12\log\frac\beta\alpha>0,
+ \qquad \partial_\beta \mathcal H=\frac\alpha{2\beta}>0.
+\]
+The formulas and their first derivatives agree at $\beta=\alpha$, which
+proves coordinate monotonicity on the whole positive quadrant.  Each
+finite leaf in the node has upper endpoint at most $r_+$, and its
+literal cost includes this free bound evaluated at its own upper
+endpoint.  The claimed inequalities follow.
+\end{proof}
+
+\begin{lemma}[Uniform shifted cost bound]
+\label{lem:cert-iid-shifted}
+Suppose $r_+<+\infty$ and $z(r_+)>\alpha(r_-)$.  Then every literal
+cost in the node is at least
+\begin{equation}
+ C(r_+)+z(r_+)+\frac{\alpha(r_+)r_-}{2}
+ -\frac{\alpha(r_-)^2}
+ {24\bigl(z(r_+)-\alpha(r_-)/2\bigr)}.
+ \label{eq:cert-iid-node-shifted}
+\end{equation}
+\end{lemma}
+\begin{proof}
+Both factors in $z(r)=\beta(r)e^{-r}$ are nonnegative and
+nonincreasing, so $z$ is nonincreasing.  At every finite upper endpoint
+$r\in[r_-,r_+]$ of a descendant leaf,
+\[
+ z(r)\ge z(r_+)>\alpha(r_-)\ge\alpha(r)>\alpha(r)/2.
+\]
+Thus its literal cost includes the shifted bound $C(r)+J(r)$.
+The positive terms satisfy
+\[
+ C(r)\ge C(r_+),\qquad z(r)\ge z(r_+),\qquad
+ \alpha(r)r\ge\alpha(r_+)r_-.
+\]
+For the subtracted term, its denominator is positive and
+\[
+ \frac{\alpha(r)^2}{z(r)-\alpha(r)/2}
+ \le
+ \frac{\alpha(r_-)^2}{z(r_+)-\alpha(r_-)/2}.
+\]
+Combining these inequalities proves the result.  No monotonicity of the
+shifted expression $J(r)$ itself is asserted or required.
+\end{proof}
+
+The maximum of the available bounds in the preceding two lemmas is
+therefore a valid running-cost lower bound for the node.  For a node
+with $r_+=+\infty$ we retain only $\min\{p\Delta,0\}$.  This is the
+argument used by \texttt{Bnode} (lines 108--124).  Its stronger numerical
+guards, including $r_+\le64$, only suppress optional bounds.  The
+implemented free bound uses a conservative logarithm evaluation in
+\texttt{log\_lower}; no polynomial replacement of $\mathcal H$ is used or
+needed for this certificate.
+
+\subsection{Complete coverage and backward feasibility}
+\label{sec:cert-iid-backward}
+
+For each node, add a certified lower enclosure of
+\eqref{eq:cert-iid-node-continuation} to a certified lower enclosure of
+an applicable running-cost bound.  Call the resulting quantity
+$\underline{\mathcal R}_{\rm node}$.  By the preceding lemmas,
+\begin{equation}
+ \underline{\mathcal R}_{\rm node}\le\mathcal R_h
+ \quad\text{for every literal leaf }h\text{ in that node}.
+ \label{eq:cert-iid-node-enclosure}
+\end{equation}
+For an individually evaluated leaf, write
+$\underline{\mathcal R}_h\le\mathcal R_h$ for the certified enclosure
+returned by its continuation and cost evaluations.
+
+The default run subtracts $2^{-28}$ from each candidate.
+It also subtracts a nonnegative quantity of the form
+\[
+  2^{-40}\left\lceil 2^{24}d_h\right\rceil,
+  \qquad 0\le d_h\le y-x\le1,
+\]
+where the last inequalities are enforced by clamping in
+\texttt{allowance} (lines 126--132).  Its detailed formula is only a
+candidate-selection policy.  For feasibility, the only fact needed is
+that the subtracted quantity is nonnegative.  In particular,
+\[
+ \underline{\mathcal R}_h-2^{-28}-2^{-40}\lceil 2^{24}d_h\rceil\le\mathcal R_h.
+\]
+No assertion about a telescoping potential or approximation to an exact
+potential decrement is used.
+
+\begin{theorem}[Feasibility of the accelerated backward evaluator]
+\label{thm:cert-iid-backward}
+Assume the arithmetic routines return the lower enclosures specified
+above.  Starting from the zero terminal table, the evaluator's recursive
+search and subsequent lowering passes produce a feasible solution of
+the original FRLP.
+\end{theorem}
+\begin{proof}
+Fix a state and a previously fixed next layer.  The algorithm maintains a
+nonpositive incumbent $w$, initialized by the minimum of zero and
+conservative candidate values.  Every update takes a minimum with
+$\underline{\mathcal R}_h-2^{-28}-2^{-40}\lceil 2^{24}d_h\rceil$, so $w$ can only decrease.
+The initial hint, the unbounded leaf, and the ternary-search proposals
+supply candidates only; they do not remove any leaf from the subsequent
+search.
+
+A node is pruned only if
+$\underline{\mathcal R}_{\rm node}\ge w$.  At that moment,
+\eqref{eq:cert-iid-node-enclosure} implies $w\le\mathcal R_h$ for every
+leaf in that node.  Later decreases of $w$ preserve all these inequalities.
+If a node is not pruned and is a singleton, its leaf is evaluated and the
+incumbent is updated; the resulting value is at most that leaf's literal
+row.  Otherwise the node is partitioned into two disjoint nonempty
+consecutive sets of leaves and both children are searched.
+
+The root contains all $N_q$ leaves, including the last unbounded
+interval.  Recursive splitting strictly decreases the number of leaves,
+so the search terminates.  Its terminal nodes form a disjoint cover of
+the root.  Every terminal node is either pruned with its inequalities
+proved, or explicitly evaluated.  Consequently the final incumbent
+satisfies $w\le\mathcal R_h$ for every $h$.  This argument also covers an
+immediate pruning of the root.  The source's coverage counter, which
+adds the number of leaves at a pruned node and one at an evaluated
+singleton, checks this complete cover; the counter alone is not a
+substitute for~\eqref{eq:cert-iid-node-enclosure}.
+
+Apply this search independently to each non-diagonal state.  Its outputs
+are nonpositive and satisfy every literal row against the fixed next
+layer; the diagonal is left at zero.  Lemma~\ref{lem:cert-iid-lowering}
+then preserves feasibility and supplies the interpolant properties
+needed at the next backward step.  The zero terminal table has these
+properties.  Backward induction from $k=N_t-1$ to $k=0$ proves the claim.
+\end{proof}
+
+The search just analyzed is \texttt{solve}/\texttt{search}
+(lines 135--155); the layer update followed by lowering is in
+lines 190--201.  In particular, no assumption of unimodality is needed
+for the ternary-search proposals, and no value obtained from an ancestor
+node is substituted for a literal leaf row.
+
+Finally, the initial table entry is an integer multiple of $2^{-40}$,
+and the reported objective is
+\[
+ \gamma
+  =2^{-40}\lfloor2^{40}\theta(0)\rfloor+v_{0,N_y,0}
+  \le\theta(0)+v_{0,N_y,0}.
+\]
+The FRLP implication proved in Section~3.3 of the paper, using the
+concavity of the true $V_t$ and Lemma~3.3, therefore gives
+\[
+ L(b,q)\ge\theta(0)+V_0(1,0)
+       \ge\theta(0)+v_{0,N_y,0}
+       \ge\gamma
+\]
+for every admissible $q$.  The numerical interpolant itself need not be
+concave.  The all-finite-$n$ consequence is supplied by the paper's
+separate transfer theorem; it is not an additional assertion of this
+backward evaluator.

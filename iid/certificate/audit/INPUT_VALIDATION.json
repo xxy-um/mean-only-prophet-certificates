@@ -1,0 +1,12 @@
+{
+  "validation": "PASS: exact rational coefficient and knot checks",
+  "N": 640,
+  "Q": 131093,
+  "m": 1200,
+  "coefficient_max_error": 1.546689166107828e-15,
+  "coefficient_allowance": "2^-48",
+  "H": "57507834299659/77507834299659",
+  "cap": "133422326965109/155015668599318",
+  "header_sha256": "78f7f85883cc353edc073e51a90b302b780f5cb89fa6dd90b7dcbccbd235e8f5",
+  "seconds": 269.51022945599834
+}

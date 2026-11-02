@@ -1,0 +1,89 @@
+{
+  "report_created_utc": "2026-11-02T07:25:57.413419+00:00",
+  "source_sha256": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219",
+  "frozen_manifest_files_verified": 42,
+  "exact_input_validation": {
+    "status": "PASS",
+    "max_coefficient_error_display": 1.546689166107828e-15,
+    "coefficient_allowance": "2^-48",
+    "elapsed_seconds": 85.90091442599987
+  },
+  "first_five_layer_replay": {
+    "layers": [
+      639,
+      638,
+      637,
+      636,
+      635
+    ],
+    "elapsed_seconds": 5.478101213999253,
+    "last_layer_numerator": 809146918543,
+    "denominator": 1099511627776,
+    "historical_logged_objectives_calls_leaves_matched": true,
+    "layer635_recorded_state_values_checked": 100,
+    "all_layer635_state_values_matched": true
+  },
+  "checkpoint_zero_validation": {
+    "current_and_next_table_entries_each": 721801,
+    "zero_diagonals": true,
+    "nonpositive_entries": true,
+    "coordinate_monotone_entries": true,
+    "recorded_state_integers_checked_against_current_table": 100
+  },
+  "independent_long_double_diagnostic_scan": {
+    "time_layer": 0,
+    "states": 100,
+    "rate_rows_per_state": 131093,
+    "total_rate_rows": 13109300,
+    "elapsed_seconds": 2.0261477300009574,
+    "all_rows_passed": true,
+    "largest_post_minus_rhs_display": -4.192770575173199e-09,
+    "all_output_records_match_historical_scan": true,
+    "rigorous_global_interval_verification": false
+  },
+  "independent_exact_selected_rows": {
+    "count": 3,
+    "all_strictly_feasible": true,
+    "states": [
+      {
+        "k": 0,
+        "i": 1200,
+        "j": 1199,
+        "leaf": 0,
+        "post_minus_rhs": {
+          "lo": -0.0013454246044328144,
+          "hi": -0.0013454246044328144,
+          "width": 1.5267047841482296e-55
+        }
+      },
+      {
+        "k": 0,
+        "i": 1,
+        "j": 0,
+        "leaf": 131070,
+        "post_minus_rhs": {
+          "lo": -6.057907228287651e-08,
+          "hi": -6.057907228287651e-08,
+          "width": 2.1632485225047915e-51
+        }
+      },
+      {
+        "k": 0,
+        "i": 1200,
+        "j": 0,
+        "leaf": 17,
+        "post_minus_rhs": {
+          "lo": -1.0918417528561987e-07,
+          "hi": -1.0918417528561987e-07,
+          "width": 5.100089187308535e-50
+        }
+      }
+    ]
+  },
+  "scope": "These completed input, partial-replay, and selected-row checks supplement the mathematical proof. The separate complete 640-layer replay has its own completion report.",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+  }
+}

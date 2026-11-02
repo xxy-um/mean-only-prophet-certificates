@@ -1,0 +1,83 @@
+The source lines cited in this document refer to the unchanged
+\texttt{certificate/verify.cpp}. Its SHA-256 is
+\begin{center}
+\small\texttt{6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219}.
+\end{center}
+The release preflight checks this identity and all 42 entries in the
+original manifest. In particular, the mathematical argument is tied to
+the actual expression order and guards of this source.
+
+\begin{longtable}{@{}p{0.25\linewidth}p{0.21\linewidth}p{0.46\linewidth}@{}}
+\toprule
+Source item & Paper notation & Role\\
+\midrule
+\endhead
+\texttt{N}, \texttt{Q}, \texttt{m} & $N_t,N_q,N_y$ & Time, rate, and state grid dimensions\\
+\texttt{bs[k]}, \texttt{bl[k]} & $b$ on $[t_k,t_{k+1}]$ & Identical approximations of the same exact rational drop rate\\
+\texttt{DD[k]} & $1-\theta(t_k)$ & Frozen threshold complement\\
+\texttt{cap} & $c$ & The constant from Appendix A.1\\
+\texttt{ee[h]}, \texttt{ii[h]} & $e^{-\Delta r_h},I_{r_h}$ & Rate-dependent input coefficients\\
+\texttt{vv[h]}, \texttt{er[h]} & $r_h+e^{-r_h}-1,e^{-r_h}$ & Rate-dependent input coefficients\\
+\texttt{A}, lines 63--68 & Continuation in \eqref{eq:cert-iid-row} & Leaf continuation with conservative coordinates and multiplier\\
+\texttt{B}, lines 78--96 & Lemma A.3 cost & Conservative evaluation of available cost bounds\\
+\texttt{rectA}, lines 98--106 & Lemma \ref{lem:cert-iid-continuation} & Continuation bound for a whole rate subtree\\
+\texttt{Bnode}, lines 108--124 & Lemmas \ref{lem:cert-iid-free}--\ref{lem:cert-iid-shifted} & Cost bound for a whole rate subtree\\
+\texttt{search}/\texttt{solve}, lines 135--155 & Theorem \ref{thm:cert-iid-backward} & Complete constraint coverage and downward candidate updates\\
+\texttt{lower\_monotone}, lines 158--166 & Lemma \ref{lem:cert-iid-lowering} & Current-layer lowering and explicit monotonicity checks\\
+\bottomrule
+\end{longtable}
+
+The scalar storage constant named \texttt{U} in the source is $2^{40}$,
+and \texttt{L} is the state-grid denominator $2^{30}$. These code
+identifiers do not redefine the paper's mathematical symbols.
+
+\subsection{Input validation}
+The original input validator represents every hexadecimal input exactly
+as a rational number. For $0\le z\le1$, the alternating Taylor sums of
+degrees 25 and 24 enclose $e^{-z}$. For larger arguments below 64,
+the validator repeatedly halves the argument until it lies in $[0,1]$
+and squares the positive rational endpoints to recover the original
+exponential. For $z\ge64$, it uses
+\[
+ 0\le e^{-z}\le 2^{-\lfloor z\rfloor},
+\]
+which follows from $e>2$. These enclosures validate the entire frozen
+coefficient file, including the differences used to form $I_r$ and
+$r+e^{-r}-1$, with error strictly below
+$\varepsilon_{\mathrm{in}}$. The exact $r=0$ value is $I_0=\Delta$.
+The extra preflight checks establish the fixed-instance facts used by
+the arithmetic proof and the consistency of all input representations.
+
+\subsection{Commands and acceptance conditions}
+From the release root, run
+\begin{verbatim}
+python3 reproduce.py --check-only
+python3 reproduce.py --full --threads 8
+\end{verbatim}
+The first command checks the original manifest, the exact preflight
+assumptions, and all coefficient input enclosures. The second also invokes
+the original launcher, reconstructs all 640 backward layers, and checks
+the exact objective against \texttt{certificate/RESULTS.json}. It compares
+the complete final current table, next-layer table, and hint array with
+the original checkpoint hashes. Acceptance never uses a decimal display.
+
+The launcher requires Python 3.9 or later and a GNU-compatible C++17
+compiler with OpenMP and signed \texttt{\_\_int128}. The compilation
+options include \texttt{-ffp-contract=off}; fast-math and disabled
+assertions are rejected. The evaluator sets and checks round-to-nearest
+on each worker before its state computations. Python assertions must
+also remain enabled; the root reproduction script rejects disabled Python
+assertions. Standard IEEE gradual underflow is required, with flush-to-zero
+and denormals-are-zero modes disabled.
+
+The files in \texttt{validation/} identify the checks performed for this
+release. The complete replay record and layer log concern all 640 layers.
+Selected-state diagnostic scans and exact interval row checks are
+additional, explicitly scoped evidence. Their role is to cross-check
+the implementation; the full feasibility argument is the induction and
+arithmetic proof above.
+
+The source, rational inputs, and proof suffice to verify the fixed
+threshold. No property of the historical threshold-search procedure is
+used. To rebuild this PDF, run \texttt{pdflatex verification.tex} twice
+in \texttt{docs/}; the distributed PDF is already compiled.

@@ -1,0 +1,334 @@
+\subsection{Certification of the running-cost arithmetic}
+\label{sec:cost-roundoff}
+
+This subsection concerns the frozen functions \texttt{B}, \texttt{Bnode}, and
+\texttt{log\_lower}; it does not introduce a different running-cost bound.
+We use the constants $\varepsilon_{\mathrm{in}}=2^{-48}$,
+$\varepsilon_{\mathrm{ar}}=2^{-32}$, and $\mathfrak u=2^{-53}$ fixed above.
+Write $\mathfrak g_j=j\mathfrak u/(1-j\mathfrak u)$.
+Hats denote computed binary64 quantities.  In particular,
+$|\widehat p-p|<8\varepsilon_{\mathrm{in}}$ and
+$|\widehat t-t|<2\varepsilon_{\mathrm{in}}$, as established in the
+continuation analysis.  The validated data satisfy
+\[
+ \begin{gathered}
+ \Delta=1/640,\quad 0\le t\le1-\Delta,\quad 0\le x<y\le1,\\
+ \tfrac14<b<2,\quad |p|<2,\quad 0\le I_r\le\Delta,\quad 0\le E(r),e^{-r}\le1.
+ \end{gathered}
+\]
+Here $p=cx+y(D-b)$, where $.85<c<.9$ and $0\le D\le1$: thus
+$p>-2$ and $p\le y(.9+1-1/4)\le1.65<2$.
+Each stored coefficient has absolute error less than
+$\varepsilon_{\mathrm{in}}$, and the stored $\Delta$ has relative error
+less than $\varepsilon_{\mathrm{in}}$.  Write
+\[
+ p_-=-(-p)^+,\qquad p_+=p^+,\qquad
+ C(r)=p_-\Delta+p_+I_r,
+\]
+\[
+ \alpha(r)=\left(ybE(r)-\frac{p_-I_r}\Delta\right)\Delta^2,
+ \quad \beta(r)=b(1-y+ty)\Delta+ybI_r\Delta,
+ \quad z(r)=\beta(r)e^{-r}.
+\]
+
+\paragraph{A reproducible error bound for the coefficients.}
+For every elementary operation, including one with a subnormal result, we
+use the following weaker form of the preceding floating-point model:
+\begin{equation}
+ |\operatorname{fl}(v)-v|\le\mathfrak u|v|+2^{-1074}.
+ \label{eq:cost-basic-roundoff}
+\end{equation}
+For example, if $|a|\le A$, $|b|\le B$ and the operand errors are
+$e_a,e_b$, a product has error at most
+\[
+ Ae_b+Be_a+e_ae_b+
+ \mathfrak u(A+e_a)(B+e_b)+2^{-1074}.
+\]
+An addition has error at most
+$e_a+e_b+\mathfrak u(A+B+e_a+e_b)+2^{-1074}$.
+For division by a positive exact $b\ge b_0>e_b$, first bound the input
+perturbation by $(e_a+|a/b|e_b)/(b_0-e_b)$, and then apply
+\eqref{eq:cost-basic-roundoff}.  The maps $v\mapsto\min(v,0)$ and
+$v\mapsto\max(v,0)$ do not increase absolute errors.
+
+The following table applies these inequalities in the source's evaluation
+order.  The middle column bounds the magnitude of the corresponding exact
+expression, and the last column is a strict error bound in units of
+$\varepsilon_{\mathrm{in}}$.  Each multiplication by $\Delta$ is a
+separate operation.  The dyadic quantity $1-y$ is exact.
+\begin{center}
+\small
+\begin{tabular}{lll}
+\hline
+Expression & Exact magnitude bound & Error coefficient\\
+\hline
+$yb$; $ybE$ & $2$; $2$ & $2$; $5$\\
+$p_-I_r$; $p_-I_r/\Delta$ & $2\Delta$; $2$ & $3$; $2000$\\
+$ybE-p_-I_r/\Delta$ & $4$ & $2010$\\
+$(ybE-p_-I_r/\Delta)\Delta$ & $4\Delta$ & $4$\\
+$\alpha=(ybE-p_-I_r/\Delta)\Delta^2$ & $4\Delta^2$ & $1$\\
+$ty$; $1-y+ty$ & $1$; $1$ & $3$; $4$\\
+$b(1-y+ty)$; $b(1-y+ty)\Delta$ & $2$; $2\Delta$ & $10$; $1$\\
+$ybI_r$; $ybI_r\Delta$ & $2\Delta$; $2\Delta^2$ & $3$; $1$\\
+$\beta$; $z=\beta e^{-r}$ & $2\Delta(1+\Delta)<.004$ & $3$; $4$\\
+$p_-\Delta$; $p_+I_r$; $C=p_-\Delta+p_+I_r$ & $2\Delta$ & $1$; $3$; $5$\\
+\hline
+\end{tabular}
+\end{center}
+For the largest intermediate error, for example, division of the preceding
+$3\varepsilon_{\mathrm{in}}$ error by
+$\Delta(1-\varepsilon_{\mathrm{in}})$ contributes less than
+$1921\varepsilon_{\mathrm{in}}$; denominator perturbation and rounding
+contribute less than $3\varepsilon_{\mathrm{in}}$.  The two following
+multiplications reduce the bound to the displayed $4$ and $1$.
+All other entries follow by the same displayed product and sum rules;
+the strict margins also exceed the sum of the fewer than $100$ possible
+$2^{-1074}$ terms.  In particular, all four final errors are less than
+$8\varepsilon_{\mathrm{in}}$.
+
+\paragraph{The logarithm computed by the frozen source.}
+This paragraph certifies the actual twelve-term loop, not the unused
+degree-five polynomial mentioned in an older explanation.  Whenever the
+logarithmic branch is reached, put
+$v=\widehat\beta/\widehat\alpha$ in exact real arithmetic and
+$\widehat v=\operatorname{fl}(v)$.  The guards give
+$\widehat\beta>\widehat\alpha>\varepsilon_{\mathrm{ar}}$; hence
+$1\le\widehat v<2^{25}$ and $|\log\widehat v-\log v|<2\mathfrak u$.
+The exact binary operation \texttt{frexp} gives $\widehat v=2^e m$ with
+$0\le e\le24$ and $1\le m<2$.  For $w_0=(m-1)/(m+1)$,
+\[
+ S_{12}(m)=2\sum_{j=0}^{11}\frac{w_0^{2j+1}}{2j+1}
+ \le\log m,\qquad 0\le w_0<\tfrac13.
+\]
+The subtraction $m-1$ is exact.  Rounding of $m+1$ and the division give
+a relative error bounded by $\mathfrak g_2$
+in a nonzero $w_0$.  In the largest monomial, its degree is $23$;
+the repeated squaring-factor and product operations contribute at most
+$22$ further factors, division contributes one, and summation contributes
+at most eleven.  Thus the computed $2\,\texttt{sum}$ is at most
+\[
+ (1+\mathfrak g_{128})S_{12}(m)+256\cdot2^{-1074}.
+\]
+This bound also covers underflow of the smallest positive monomials.
+There is no assumption about a platform logarithm implementation.
+
+The hexadecimal constant in the source is the exact rational
+\[
+ c_2=\frac{3121657384082679}{2^{52}}
+       =\texttt{0x1.62e42fefa39eep-1}.
+\]
+The finite rational inequality
+\[
+ 2\sum_{j=0}^{39}\frac1{(2j+1)3^{2j+1}}
+       > c_2+2^{-53}
+\]
+is checked by multiplication by the positive common denominator.
+The left side is a lower partial sum of the positive series for $\log2$,
+so $c_2<\log2$.  Since $S_{12}(m)<1$ and $e\le24$, the above
+polynomial error, the product $ec_2$, the final addition and subtraction,
+and the rounded quotient have combined upper error at most
+\[
+ \mathfrak g_{128}S_{12}(m)+24\mathfrak u+25\mathfrak u
+ +26\mathfrak u+2\mathfrak u+512\cdot2^{-1074}
+ <256\mathfrak u+512\cdot2^{-1074}
+ <32\varepsilon_{\mathrm{in}}.
+\]  Consequently the returned value satisfies
+\begin{equation}
+ \texttt{log\_lower}(\widehat v)
+ \le\log v-\varepsilon_{\mathrm{ar}}
+            +32\varepsilon_{\mathrm{in}}
+ <\log v.
+ \label{eq:cost-log-certified}
+\end{equation}
+
+\paragraph{The free bound and its branch tests.}
+Recall $\mathcal H$ from~\eqref{eq:cert-iid-free}.
+On the guarded domain and on the segment joining the exact and computed
+coefficient pairs, $\alpha>\varepsilon_{\mathrm{ar}}/2$ and
+$\beta<.004$.  The function is continuously differentiable across
+$\beta=\alpha$, and direct differentiation gives
+\[
+ 0\le\partial_\beta \mathcal H\le1,\qquad
+ 0\le\partial_\alpha \mathcal H<10.
+\]
+Indeed $\beta/\alpha<2^{26}$ in the logarithmic region.  Thus coefficient
+perturbations change $\mathcal H$ by less than
+$88\varepsilon_{\mathrm{in}}$.  This argument permits the computed and
+exact pairs to fall on different sides of the branch test.
+In the rational branch the division, subtraction, and multiplication
+contribute less than $\varepsilon_{\mathrm{in}}$ in absolute error.
+In the other branch, \eqref{eq:cost-log-certified} and the remaining two
+rounded operations give the same one-sided bound.
+Including the error of \texttt{base}, addition, and subtraction, the
+computed candidate \texttt{base+freebound-eps} is therefore at most
+\[
+ C(r)+\mathcal H(\alpha(r),\beta(r))
+       -\varepsilon_{\mathrm{ar}}+128\varepsilon_{\mathrm{in}},
+\]
+and is a valid lower bound.  If a positivity guard fails, the source simply
+does not use this candidate.  The baseline \texttt{min(p,0)*dt-eps}
+is separately a lower bound for $\min(p,0)\Delta$.
+
+\paragraph{The scalar shifted bound.}
+The frozen rate grid contains $64$ exactly and every other rate has
+distance at least $16$ from $64$.  Thus \texttt{rr[hi]<=64} cannot admit
+an exact rate exceeding $64$.  The test
+$\widehat z>\operatorname{fl}(\widehat\alpha+
+\varepsilon_{\mathrm{ar}})$ implies $z>\alpha$: the total coefficient
+and addition errors are less than $17\varepsilon_{\mathrm{in}}$.
+The same strict inequality holds throughout the segment between the
+exact and computed $(\alpha,z)$ pairs.  For
+\[
+ \mathcal J(\alpha,z,r)=z+\alpha r/2-
+       \frac{\alpha^2}{24(z-\alpha/2)},\qquad z>\alpha\ge0,
+\]
+differentiation gives
+\[
+ 1\le\partial_z\mathcal J\le\tfrac76,
+ \qquad |\partial_\alpha\mathcal J|\le33,
+ \qquad |\partial_r\mathcal J|=\alpha/2<1
+ \quad(0\le r\le64+\varepsilon_{\mathrm{in}}).
+\]
+Hence coefficient perturbations, including that of $r$, contribute less
+than $275\varepsilon_{\mathrm{in}}$.  The subtraction in
+$\ell=z-\alpha/2$ has no harmful relative cancellation, since
+$\ell>z/2$ and $\ell>\alpha/2$.
+The exact quotient $\alpha^2/(24\ell)$ is at most $\alpha/12$.
+The rounding of $\ell$, its multiplication by $24$, the numerator
+product, and division give absolute error at most
+$\mathfrak g_5\alpha/12+2^{-1000}$ in this quotient.
+For the additive term, the guard gives $\ell>\varepsilon_{\mathrm{ar}}/2$;
+propagating the fewer than ten possible $2^{-1074}$ errors through these
+operations amplifies them by less than $2^{40}$, which is covered by
+$2^{-1000}$.  All remaining products and sums have magnitude less
+than $1$; applying \eqref{eq:cost-basic-roundoff} to them and to
+\texttt{base} bounds the complete upward error by
+$512\varepsilon_{\mathrm{in}}$.
+Thus \texttt{sharp-eps} is below the exact shifted expression whenever
+this branch is used.
+
+\paragraph{The shifted bound for a tree node.}
+Let the node's endpoint rates be $r_-\le r_+\le64$.
+The quantities actually formed by the source are
+\[
+ \overline\alpha=\operatorname{fl}(\widehat\alpha(r_-)
+                 +16\varepsilon_{\mathrm{in}}),\quad
+ \underline\alpha=\max\{0,\operatorname{fl}(\widehat\alpha(r_+)
+                 -16\varepsilon_{\mathrm{in}})\},
+\]
+\[
+ \underline z=\max\{0,\operatorname{fl}(\widehat z(r_+)
+                 -16\varepsilon_{\mathrm{in}})\},\quad
+ \underline r=\max\{0,\operatorname{fl}(\widehat r_-
+                 -16\varepsilon_{\mathrm{in}})\}.
+\]
+The table above proves
+$\overline\alpha\ge\alpha(r_-)$,
+$0\le\underline\alpha\le\alpha(r_+)$, and
+$0\le\underline z\le z(r_+)$: the extra additions and subtractions
+have error less than $\varepsilon_{\mathrm{in}}$.
+For the last expression their error is at most
+$3\varepsilon_{\mathrm{in}}$, so $0\le\underline r\le r_-$ as well.
+The rounded guard implies $\underline z>\overline\alpha$.
+Therefore the exact expression in these already directed floating inputs,
+\[
+ C(r_+)+\underline z+
+ \underline\alpha\,\underline r/2-
+ \frac{\overline\alpha^2}
+      {24(\underline z-\overline\alpha/2)},
+\]
+is a lower bound for the shifted cost of every descendant original row,
+by the endpoint argument proved above.
+Its quotient is again at most $\overline\alpha/12$, with absolute
+operation error at most $\mathfrak g_5\overline\alpha/12+2^{-1000}$.  The remaining operation errors and
+the error of \texttt{base} together are less than
+$16\varepsilon_{\mathrm{in}}$.  Subtracting
+$2\varepsilon_{\mathrm{ar}}$ therefore preserves the lower-bound
+direction.  No monotonicity of the full shifted expression is assumed.
+
+In \texttt{B}, the maximum of the available certified candidates remains
+certified.  The final subtraction of $\varepsilon_{\mathrm{ar}}$, exact
+power-of-two scaling, floor, and subtraction of one integer unit give a
+lower bound in units of $2^{-40}$.  The analogous floor and subtraction
+in \texttt{Bnode} have the same direction.  The magnitudes just established
+are below $1$, so the final floating subtraction has error less than
+$\varepsilon_{\mathrm{in}}$ and cannot exhaust any of these margins.
+
+\subsection{Table magnitudes, integer safety, and the final objective}
+\label{sec:integer-safety}
+
+The allowance computation requires no approximation theorem.  The
+coordinates are exact multiples of $2^{-30}$, so its $w=y-x$ is exact
+and lies in $[0,1]$.  Whatever error occurs in computing the intermediate
+\texttt{future}, the two comparisons in
+\texttt{max(0,min(w,w-future))} put the returned floating value in $[0,w]$.
+Multiplication by $2^{24}$ is exact, and consequently
+\[
+ 0\le\texttt{allowance}\le2^{24}.
+\]
+Subtracting this integer therefore only lowers a proposed table value,
+by at most $2^{-16}$.  The fixed additional slack is $2^{-28}$.
+
+Let $M_k$ be the largest absolute table entry in layer $k$, after division
+by $2^{40}$.  All entries are nonpositive.  Integer barycentric
+interpolation of the next layer lies between its minimum and zero:
+flooring cannot cross the integer minimum.  The previously certified
+multiplier, including its ceiling and extra integer unit, is at most
+$2^{40}(1+2\varepsilon_{\mathrm{ar}}+2\cdot2^{-40})$.
+The subsequent integer floor loses less than $2^{-40}$.
+For the running cost, the actual baseline arithmetic gives
+\[
+ 2^{-40}\texttt{B(hi)}
+ \ge -3/640-3\varepsilon_{\mathrm{ar}}-2\cdot2^{-40}.
+\]
+Indeed $|\widehat p|<2+8\varepsilon_{\mathrm{in}}$;
+the computed product with $\widehat\Delta$ is greater than $-3/640$;
+the baseline and final floating subtractions use two
+$\varepsilon_{\mathrm{ar}}$ deductions, their rounding is covered by
+the third, and flooring followed by subtraction of one costs less than
+two integer units.  Taking a maximum can only improve this lower bound.
+It follows, with deliberately enlarged constants, that
+\begin{align*}
+ M_k&\le aM_{k+1}+d,\qquad M_{640}=0,\\
+ a&=1+2\varepsilon_{\mathrm{ar}}+2\cdot2^{-40},\\
+ d&=3/640+4\varepsilon_{\mathrm{ar}}+8\cdot2^{-40}
+                  +2^{-28}+2^{-16}.
+\end{align*}
+Taking minima with zero or with additional proposals, and either
+monotonicity-lowering pass, preserves this global lower bound.
+Since $640(a-1)<1$, the binomial theorem gives
+\[
+ M_k\le d\sum_{j=0}^{639}a^j
+ \le\frac{640d}{1-640(a-1)}
+ =\frac{1846693964}{613566573}<\frac{301}{100}<4.
+\]
+Thus every stored integer has magnitude below $4\cdot2^{40}$.
+
+Whenever interpolation is performed, its tests give
+$0\le X<Y\le2^{30}$.  Lookup indices lie in $[0,65536]$, and every
+grid width and offset lies in $[0,2^{30}]$.  The barycentric denominator
+and each unscaled weight are at most $2^{60}$, so their products and
+differences fit signed 64-bit integers.  The selected triangle has
+nonnegative weights summing to the denominator.  Its weighted numerator
+and all partial sums therefore have magnitude at most
+$4\cdot2^{40}\cdot2^{60}=2^{102}$, safely within signed 128-bit range.
+Continuation multiplier products are smaller than $2^{84}$, and the
+negative-floor formula's additional denominator is also harmless at
+these bounds.  Each conversion of a running-cost value, multiplier, or
+allowance to a signed 64-bit integer is within its range.
+The state-array size is $1201\cdot1202/2=721801$; all index products fit
+signed 32-bit integers.  A binary tree over $131093$ leaves has fewer
+than twice that many nodes; the additional proposal evaluations are
+fewer than $50$ per state.  Per-state counters fit unsigned 32-bit
+integers and their sums over all states fit unsigned 64-bit integers.
+
+Finally, input validation establishes
+$\texttt{HU}=\lfloor2^{40}\theta(0)\rfloor$.
+The reported exact objective is therefore
+\[
+ \frac{\texttt{HU}+\texttt{table}[m,0]}{2^{40}}
+ \le\theta(0)+\frac{\texttt{table}[m,0]}{2^{40}}.
+\]
+Together with the original-row feasibility induction, this proves the
+claimed direction of the rational objective; the printed decimal plays
+no role in acceptance.

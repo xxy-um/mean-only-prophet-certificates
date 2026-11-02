@@ -1,0 +1,51 @@
+{
+  "completed_utc": "2026-11-02T07:36:24.604239+00:00",
+  "time_layer": 320,
+  "state_integers_from_new_full_replay_match_historical": true,
+  "states": 100,
+  "original_rate_rows_scanned_per_state": 131093,
+  "total_diagnostic_rows": 13109300,
+  "all_diagnostic_rows_passed": true,
+  "historical_diagnostic_records_available": 97,
+  "all_available_historical_records_match_new_scan": true,
+  "additional_previously_unrecorded_states_scanned": 3,
+  "largest_post_minus_rhs_display": -3.7243256153841097e-09,
+  "exact_interval_rows_checked": 3,
+  "all_exact_selected_rows_strictly_feasible": true,
+  "selected_exact_rows": [
+    {
+      "k": 320,
+      "i": 85,
+      "j": 33,
+      "leaf": 131040,
+      "post_minus_rhs": {
+        "lo": -3.724325615384366e-09,
+        "hi": -3.724325615384366e-09,
+        "width": 1.2127661094106907e-55
+      }
+    },
+    {
+      "k": 320,
+      "i": 1200,
+      "j": 1199,
+      "leaf": 0,
+      "post_minus_rhs": {
+        "lo": -0.0015774958570257585,
+        "hi": -0.0015774958570257585,
+        "width": 5.72025787356274e-56
+      }
+    },
+    {
+      "k": 320,
+      "i": 1200,
+      "j": 0,
+      "leaf": 56854,
+      "post_minus_rhs": {
+        "lo": -2.045849403745628e-08,
+        "hi": -2.045849403745628e-08,
+        "width": 1.7364444820812754e-53
+      }
+    }
+  ],
+  "scope": "Selected independent diagnostics and rational row checks supplement, but do not replace, the global mathematical proof and complete evaluator run."
+}

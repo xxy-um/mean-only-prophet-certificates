@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "time_intervals": 5120,
+  "probability_cells": 10240,
+  "equal_threshold_segments": 160,
+  "distinct_b": 160,
+  "theta_0_exact": "567246577807/800000000000",
+  "all_common_parameters_identical": true,
+  "all_plane_kinds_article_only": true,
+  "all_plane_mass_budgets_checked": true,
+  "complete_disjoint_time_coverage": true,
+  "source_coarse_counts": {
+    "160": 5068,
+    "320": 20,
+    "640": 32
+  },
+  "planes_total": 1736832,
+  "max_owner_mass": 4294967296
+}
