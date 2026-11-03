@@ -39,6 +39,8 @@ The supplementary PDFs prove the numerical implementation and error bounds used 
 
 ## Files and integrity
 
-Editable proof sources accompany each PDF. Exact inputs, verifier sources, and recorded numerical evidence are included. Check the distributed files against [IID checksums](iid/checksums.sha256), [PS certificate manifest](ps/certificate.json), and [C2 checksums](c2/SHA256SUMS) before changing them or rebuilding the PDFs.
+The three supplementary verification proofs are distributed as compiled PDFs only. LaTeX source and compilation remarks within the PDFs describe their preparation; those sources are not included in this distribution.
+
+Exact inputs, numerical verifier sources, and recorded numerical evidence are included. Check the distributed files against [IID checksums](iid/checksums.sha256), [PS certificate manifest](ps/certificate.json), and [C2 checksums](c2/SHA256SUMS) before changing them.
 
 Manuscript metadata identifies the work by its title, **Mean-only Prophet Inequalities**.

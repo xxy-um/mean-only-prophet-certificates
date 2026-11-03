@@ -47,7 +47,6 @@
   },
   "proof_note": {
     "path": "docs/Verification of the Appendix C.2 Certificate.pdf",
-    "source": "docs/C2_Certificate_Verification.tex",
     "notation": "Uses the supplied paper notation; the manuscript coefficient identities and finite-dual reduction are unchanged."
   },
   "associated_manuscript": {

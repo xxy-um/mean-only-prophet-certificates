@@ -41,7 +41,6 @@ The first command checks integrity, the exact input relationships, and all froze
 | Path | Purpose |
 | --- | --- |
 | `docs/verification.pdf` | Primary correctness document for this release |
-| `docs/verification.tex` and `docs/*.tex` | Editable LaTeX sources of the document |
 | `certificate/` | Frozen evaluator, exact inputs, checkpoints, guarded launchers, and audit records |
 | `reproduce.py` | Release preflight checks and reproducibility entry point |
 | `REPRODUCE.md` | Requirements, commands, and interpretation of the checks |
@@ -49,7 +48,7 @@ The first command checks integrity, the exact input relationships, and all froze
 | `PAPER_REFERENCE.json` | Manuscript title and frozen-source identity |
 | `checksums.sha256` | SHA-256 checksums for the complete release |
 
-The primary proof is `docs/verification.pdf`, with its editable sources in `docs/`. It supplies the implementation justification and numerical error analysis. The evaluator, exact numerical inputs, and frozen checkpoints are unchanged. The launchers reject disabled Python assertions; documentation and historical path labels have been normalized for this release. The current manifests cover the distributed files.
+The primary proof is `docs/verification.pdf`, distributed as a compiled PDF only. It supplies the implementation justification and numerical error analysis. The evaluator, exact numerical inputs, and frozen checkpoints are unchanged. The launchers reject disabled Python assertions; documentation and historical path labels have been normalized for this release. The current manifests cover the distributed files.
 
 The final rational inputs are supplied. The historical heuristic search that discovered the threshold is not needed to verify its guarantee and is not reconstructed by this package.
 

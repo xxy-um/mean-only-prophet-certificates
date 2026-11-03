@@ -17,7 +17,7 @@ The certificate covers the entire stopping-time domain using 5,120 intervals and
 
 ## Mathematical verification
 
-Read [Verification.pdf](Verification.pdf) for the complete supplementary verification, including the parameter interpretation, coefficient bounds, finite minimization, and arithmetic enclosures. Its editable source is the single self-contained file [Verification.tex](Verification.tex).
+Read [Verification.pdf](Verification.pdf) for the complete supplementary verification, including the parameter interpretation, coefficient bounds, finite minimization, and arithmetic enclosures.
 
 The proof specializes the paper's original reward criterion and Lemmas 4.7, 4.8, B.1, and B.2. In particular, the survival coefficient includes the constant deduction prescribed by the coefficient-error inequality in Lemma B.1. The choices of lower-bound planes remain fixed throughout each stopping-time interval. The certificate proves feasibility and the stated lower bound; it makes no optimality claim.
 
@@ -65,22 +65,15 @@ This reconstructs all 5,120 final proposal files from the included frozen ration
 
 This is deterministic reconstruction from supplied inputs. The earlier optimization search that discovered the threshold and candidate planes is outside this reconstruction scope. Mathematical validity is checked directly from the final rational data and does not depend on that search. See [generation/README.md](generation/README.md) for details.
 
-## Compile the verification document
+## Verification proof
 
-With a LaTeX installation providing the packages declared in `Verification.tex`, run:
-
-```sh
-pdflatex -interaction=nonstopmode -halt-on-error Verification.tex
-pdflatex -interaction=nonstopmode -halt-on-error Verification.tex
-```
-
-Repeat the compilation if LaTeX requests another run for cross-references. All mathematical content is in that one source file; no separate TeX chapters or bibliography file are required. TeX versions and PDF metadata can change the bytes of a recompiled PDF. Preserve the distributed files when checking their published integrity manifest, or compile a copy in another directory.
+The proof is distributed as `Verification.pdf` only. LaTeX sources are not included; source and compilation remarks within the PDF describe its preparation. No LaTeX installation is needed for numerical verification or proposal reconstruction.
 
 ## Repository contents
 
 | Path | Purpose |
 | --- | --- |
-| `Verification.pdf`, `Verification.tex` | Complete supplementary verification and its single-file source |
+| `Verification.pdf` | Complete supplementary verification proof |
 | `parameters.json` | Exact threshold and allocation parameters |
 | `proposals/` | Fixed plane choices and masses for all 5,120 stopping-time intervals |
 | `intervals.json` | Complete stopping-time interval assignments |

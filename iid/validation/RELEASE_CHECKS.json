@@ -30,12 +30,20 @@
   "latex_underfull_boxes": 1,
   "latex_rerun_warnings": 0,
   "pdf_visual_review_completed": true,
-  "pdf_rebuilt_from_distributed_sources": true,
   "pdf_internal_links_checked": 45,
   "all_pdf_internal_links_resolve": true,
-  "local_index_links_checked": 17,
+  "local_index_links_checked": 16,
   "all_local_index_links_resolve": true,
   "historical_full_640_layer_replay": "FULL_REPRODUCTION.json",
   "complete_backward_run_replayed_for_this_packaging": false,
-  "scope": "Current packaging, optimization-guard regression, exact-input, selected-row, and PDF checks. Historical full-run records remain separately dated; mathematical correctness is addressed in docs/verification.pdf."
+  "scope": "Current packaging, optimization-guard regression, exact-input, selected-row, and PDF checks. Historical full-run records remain separately dated; mathematical correctness is addressed in docs/verification.pdf.",
+  "pdf_rebuilt_from_sources_before_pdf_only_packaging": true,
+  "pdf_only_packaging": {
+    "checked_utc": "2026-11-03T07:14:43.533183+00:00",
+    "proof_pdf_unchanged": true,
+    "latex_sources_included": false,
+    "local_index_links_checked": 16,
+    "all_local_index_links_resolve": true,
+    "scope": "Removed proof sources and updated documentation, file links, and the outer checksum list. Earlier numerical and PDF-build checks retain their original checked_utc date."
+  }
 }

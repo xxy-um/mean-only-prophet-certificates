@@ -49,15 +49,6 @@ The output includes the exact final result, source/input identities, compiler co
 
 The release's `validation/README.md` distinguishes dated full-run and independent-check evidence from current packaging and preflight checks. The numerical evaluator, input data, and checkpoints match the historical full-run records. Historical records inside `certificate/audit/` retain their numerical results; workspace prefixes have been removed from path labels as documented in its README.
 
-## Build the proof PDF
+## Verification proof
 
-With a standard LaTeX installation containing `fontenc`, `lmodern`, `amsmath`, `amssymb`, `amsthm`, `mathtools`, `booktabs`, `longtable`, `array`, `microtype`, `geometry`, `hyperref`, and `enumitem`:
-
-```sh
-cd docs
-latexmk -pdf -interaction=nonstopmode -halt-on-error verification.tex
-```
-
-`latexmk` repeats LaTeX until the table of contents and references stabilize. If using `pdflatex` directly, repeat it until there are no undefined-reference or rerun warnings (a clean build currently needs three passes).
-
-The supplied PDF is already compiled. No LaTeX installation is needed to run the certificate.
+The proof is supplied as `docs/verification.pdf`. LaTeX sources are not included in this distribution; source and compilation remarks within the PDF describe its preparation. No LaTeX installation is needed to run the numerical verification commands above.

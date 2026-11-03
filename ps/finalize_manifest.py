@@ -7,7 +7,7 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 for required in ('README.md', 'RELEASE_NOTES.md',
-                 'Verification.tex', 'Verification.pdf'):
+                 'Verification.pdf'):
     if not (ROOT / required).is_file():
         raise FileNotFoundError('missing release file: ' + required)
 result = json.loads((ROOT / 'RESULTS.json').read_text())

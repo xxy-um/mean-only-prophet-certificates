@@ -63,7 +63,6 @@ substantial memory; this is a local computation, not an LP optimization.
 | [`data/upper_1024.json.gz`](data/upper_1024.json.gz) | Exact rational certificate, preserved byte-for-byte from the supplied artifact bundle. |
 | [`verify_certificate.py`](verify_certificate.py) | Standalone verifier with exact input validation and outward-rounded interval arithmetic. |
 | [`docs/Verification of the Appendix C.2 Certificate.pdf`](docs/Verification%20of%20the%20Appendix%20C.2%20Certificate.pdf) | Correctness proof of the released verification procedure. |
-| [`docs/C2_Certificate_Verification.tex`](docs/C2_Certificate_Verification.tex) | LaTeX source of the proof note. |
 | [`results/verification.json`](results/verification.json) | Actual run record, exact bound, input/code hashes, and target checks. |
 | [`results/coefficient_bounds.json`](results/coefficient_bounds.json) | Exact interval endpoints for all 1025 weighted coefficient averages. |
 | [`results/verification.log`](results/verification.log) | Human-readable output of the archived run. |
