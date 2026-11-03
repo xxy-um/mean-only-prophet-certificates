@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "selected_los": [
+    0,
+    96,
+    10222,
+    10238
+  ],
+  "arithmetic_replays": 4,
+  "full_certificate_records": 5120,
+  "all_numeric_fields_bit_identical": true,
+  "undefined_behavior_sanitizer": true,
+  "stderr_empty": true,
+  "source_sha256": "ab22ff5b67571201a998c76c5af420f0a1c05f631513bffa878067ae1655c55b",
+  "seconds": 2.0969960559996252,
+  "compiler_command_template": [
+    "g++",
+    "-O2",
+    "-std=c++17",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=undefined",
+    "sources/strict160_verify.cpp",
+    "-o",
+    "OUTPUT/critical_ubsan"
+  ],
+  "command_working_directory": "ps/",
+  "output_path_note": "OUTPUT denotes the temporary build directory; proposal paths are relative to ps/."
+}

@@ -1,0 +1,25 @@
+# Operating-system metadata
+.DS_Store
+__MACOSX/
+._*
+Thumbs.db
+
+# Python and LaTeX build outputs
+__pycache__/
+*.py[cod]
+*.aux
+*.toc
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+/iid/docs/verification.log
+/ps/Verification.log
+/c2/docs/C2_Certificate_Verification.log
+
+# Local verification outputs
+/iid/runs/
+/iid/certificate/runs/
+/ps/runs/
+/ps/regenerated_proposals/
+/c2/runs/

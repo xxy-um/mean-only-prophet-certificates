@@ -1,0 +1,30 @@
+{
+  "kind": "original literal A.1 FRLP conservative backward feasible solver",
+  "target": "7419/10000",
+  "N_t": 640,
+  "N_y": 1200,
+  "N_q": 131093,
+  "slack_bits": 28,
+  "potential_bits": 16,
+  "threads": 8,
+  "candidate_policy": "nonnegative bounded affine-potential drop allowance only; all node bounds and original leaf rows unchanged",
+  "heuristic": "ternary proposals only; full leaf-cover pruning still required",
+  "same_layer_operations": "lowering only, coordinate monotonic envelope",
+  "frozen_at_utc": "2026-11-01T16:54:37.102481+00:00",
+  "files": {
+    "iid_literal_solver/literal_potential16.cpp": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219",
+    "iid_literal_solver/literal_potential16": "0feaa258225c1aa69d2b30658f0900afa84f6d2129b7bbc2b777dd39f1e63736",
+    "iid_audit/first_bundle/mean_only_iid_artifacts/lower_bound/coeff_N640_Q131093.h": "78f7f85883cc353edc073e51a90b302b780f5cb89fa6dd90b7dcbccbd235e8f5",
+    "iid_audit/first_bundle/mean_only_iid_artifacts/lower_bound/grids/grid1200.txt": "f8666245d422f88df99920c0afa221b15ecf02abd7c843c7598579823557fe82"
+  },
+  "command": [
+    "iid_literal_solver/literal_potential16",
+    "8",
+    "iid_audit/first_bundle/mean_only_iid_artifacts/lower_bound/grids/grid1200.txt",
+    "iid_literal_solver/run_potential16",
+    "28",
+    "fresh",
+    "0"
+  ],
+  "path_normalization_note": "Historical file and command paths are relative to the original workspace root. Only that workspace prefix was removed; numerical results and historical hashes are unchanged."
+}

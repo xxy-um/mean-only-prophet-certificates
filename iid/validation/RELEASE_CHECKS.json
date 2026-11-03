@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "checked_utc": "2026-11-03T06:16:06.666431+00:00",
+  "certificate_manifest_entries_verified": 41,
+  "numerical_evaluator_inputs_results_and_checkpoints_unchanged": true,
+  "unchanged_mathematical_files_checked": 13,
+  "current_preflight": "PREFLIGHT.json",
+  "python_optimization_rejection_checks": {
+    "status": "PASS",
+    "cases": 20,
+    "modes": [
+      "-O",
+      "-OO",
+      "PYTHONOPTIMIZE=1",
+      "PYTHONOPTIMIZE=2"
+    ],
+    "entrypoints": [
+      "reproduce.py",
+      "certificate/run.py",
+      "certificate/validate_inputs.py",
+      "certificate/audit/check_exact_row.py",
+      "certificate/audit/check_selected_exact.py"
+    ]
+  },
+  "invalid_coefficient_header_rejected_without_pass": true,
+  "three_exact_layer_zero_row_outputs_match_historical_records": true,
+  "pdf_pages": 17,
+  "latex_undefined_references": 0,
+  "latex_overfull_boxes": 0,
+  "latex_underfull_boxes": 1,
+  "latex_rerun_warnings": 0,
+  "pdf_visual_review_completed": true,
+  "pdf_rebuilt_from_distributed_sources": true,
+  "pdf_internal_links_checked": 45,
+  "all_pdf_internal_links_resolve": true,
+  "local_index_links_checked": 17,
+  "all_local_index_links_resolve": true,
+  "historical_full_640_layer_replay": "FULL_REPRODUCTION.json",
+  "complete_backward_run_replayed_for_this_packaging": false,
+  "scope": "Current packaging, optimization-guard regression, exact-input, selected-row, and PDF checks. Historical full-run records remain separately dated; mathematical correctness is addressed in docs/verification.pdf."
+}

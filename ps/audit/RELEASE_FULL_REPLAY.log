@@ -1,0 +1,22 @@
+AUDIT PASS: target=1729/2500 (0.6916), all 5120 intervals, common parameters, plane budgets, hashes and coverage.
+REPLAY PASS: shard 3, 640 intervals.
+REPLAY PASS: shard 1, 640 intervals.
+REPLAY PASS: shard 0, 640 intervals.
+REPLAY PASS: shard 5, 640 intervals.
+REPLAY PASS: shard 4, 640 intervals.
+REPLAY PASS: shard 6, 640 intervals.
+REPLAY PASS: shard 7, 640 intervals.
+REPLAY PASS: shard 2, 640 intervals.
+{
+  "status": "VERIFIED",
+  "target_numerator": 1729,
+  "target_denominator": 2500,
+  "target_met": true,
+  "exact_target_margin": "2939645868285289/45035996273704960000",
+  "complete_input_and_coverage_audit": true,
+  "all_5120_arithmetic_checks_replayed": true,
+  "arithmetic_checks_replayed": 5120,
+  "minimum_numerator": "49839735470020217",
+  "minimum_denominator": "72057594037927936",
+  "minimum_decimal": 0.6916652732505443
+}

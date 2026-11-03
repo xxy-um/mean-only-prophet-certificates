@@ -1,0 +1,23 @@
+{
+  "status": "CERTIFIED_ORIGINAL_ARTICLE_FRLP",
+  "target_numerator": 1729,
+  "target_denominator": 2500,
+  "minimum_numerator": "49839735470020217",
+  "minimum_denominator": "72057594037927936",
+  "minimum_decimal": 0.6916652732505443,
+  "target_met": true,
+  "exact_target_margin": "2939645868285289/45035996273704960000",
+  "segments": 160,
+  "N_t": 5120,
+  "N_p": 10240,
+  "complete_clock_coverage": true,
+  "all_probability_suffixes_checked": true,
+  "fixed_plane_choices_per_time_interval": true,
+  "same_common_parameters_all_intervals": true,
+  "new_reward_bound_used": false,
+  "time_interpolation_used": false,
+  "optimality_claimed": false,
+  "source_sha256": "ab22ff5b67571201a998c76c5af420f0a1c05f631513bffa878067ae1655c55b",
+  "max_shard_seconds": 204.00118382100482,
+  "target_decimal": 0.6916
+}

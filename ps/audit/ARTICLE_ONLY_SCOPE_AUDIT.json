@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "scope": "fixed final coefficient files; article-only plane types and B.1 midpoint correction",
+  "intervals": 5120,
+  "N_t": 5120,
+  "N_p": 10240,
+  "full_time_cover": true,
+  "common_b_m_kappa_eta_equal_to_parameters": true,
+  "b_positive_strictly_increasing_160": true,
+  "max_owner_mass": 4294967296,
+  "mass_denominator": 4294967296,
+  "coarse_owner_grids": {
+    "160": 5068,
+    "320": 20,
+    "640": 32
+  },
+  "plane_kinds": {
+    "C": 624296,
+    "log": 1112536
+  },
+  "factory_sha256": "3b85339d642b6367addbcefb8076b9558bc8b67ad88d7b57444b31c1efc9a21c",
+  "verifier_sha256": "ab22ff5b67571201a998c76c5af420f0a1c05f631513bffa878067ae1655c55b"
+}

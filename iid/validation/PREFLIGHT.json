@@ -1,0 +1,45 @@
+{
+  "started_utc": "2026-11-03T06:12:59.476716+00:00",
+  "mode": "check-only",
+  "integrity": {
+    "status": "PASS",
+    "manifest_sha256": "0b473839868b90d9faf20c62a63d4bb252d0e21fd02a73492715ae3dc797a159",
+    "files_checked": 41,
+    "source_sha256": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219"
+  },
+  "exact_assumptions": {
+    "status": "PASS",
+    "runtime_grid_matches_validated_json": true,
+    "direct_rational_threshold_matches_reconstruction": true,
+    "threshold_height": "57507834299659/77507834299659",
+    "cap": "133422326965109/155015668599318",
+    "slope_count": 40,
+    "state_subdivisions": 1200,
+    "rate_intervals": 131093,
+    "last_finite_rate": 8192,
+    "rate_64_guard_separated": true,
+    "ln2_constant_below_rational_lower_enclosure": true,
+    "ln2_constant_rational_safety_margin_exceeds_2_pow_minus_53": true,
+    "ln2_lower_gap_display": 1.3421277060097865e-16,
+    "ln2_enclosure_width_display": 6.264347871467941e-41,
+    "table_recurrence_bound_below_3_01": true,
+    "table_recurrence_bound_exact": "1846693964/613566573",
+    "table_recurrence_bound_display": 3.0097695103738973,
+    "signed128_barycentric_range_check": true,
+    "scope": "Exact checks of stated input assumptions; not a replacement for the mathematical error/pruning proofs."
+  },
+  "exact_coefficient_validation": {
+    "validation": "PASS: exact rational coefficient and knot checks",
+    "N": 640,
+    "Q": 131093,
+    "m": 1200,
+    "coefficient_max_error": 1.546689166107828e-15,
+    "coefficient_allowance": "2^-48",
+    "H": "57507834299659/77507834299659",
+    "cap": "133422326965109/155015668599318",
+    "header_sha256": "78f7f85883cc353edc073e51a90b302b780f5cb89fa6dd90b7dcbccbd235e8f5",
+    "seconds": 126.83211318899976
+  },
+  "preflight_seconds": 129.91497329499998,
+  "complete_backward_run_replayed": false
+}

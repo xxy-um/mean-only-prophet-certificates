@@ -1,0 +1,19 @@
+{
+  "title": "Mean-only Prophet Inequalities",
+  "relevant_sections": [
+    "3.3",
+    "Appendix A.1"
+  ],
+  "reference_numbering": "Printed manuscript page numbers; PDF page index is one greater.",
+  "certificate_source_sha256": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219",
+  "original_archive_sha256": "1b39172d00b7f1137d7d2bb4d70d49fde976a0470938075f51bdaeb0860f043a",
+  "associated_manuscript": {
+    "title": "Mean-only Prophet Inequalities",
+    "relevant_sections": [
+      "Section 3.3",
+      "Appendix A.1",
+      "Appendix A.2"
+    ]
+  },
+  "original_archive_note": "Historical identity of the original input archive. The present release distributes the certificate directory without a duplicate archive; its launchers, documentation, and historical path labels have been updated. The numerical evaluator, input data, and checkpoints are unchanged."
+}
