@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit and replay the fixed, article-only 160-segment FRLP certificate."""
+"""Verify all 5,120 stopping-time intervals of the fixed PS certificate."""
 from __future__ import annotations
 import argparse
 from concurrent.futures import ThreadPoolExecutor
@@ -12,13 +12,10 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parent
 TARGET = Fraction(1729, 2500)
-KEYS = ('N', 'lo', 'width', 'lower_numerator', 'denominator',
-        'constant_lo', 'constant_hi', 'min_suffix', 'min_suffix_index',
-        'max_gradient_width')
+EXPECTED_MINIMUM = Fraction(49839735470020217, 72057594037927936)
 
 
 def require(condition, message):
-    """Validate certificate data even when Python runs with -O."""
     if not condition:
         raise ValueError(message)
 
@@ -28,12 +25,17 @@ def audit():
     require(manifest['target_numerator'] == TARGET.numerator, 'target numerator mismatch')
     require(manifest['target_denominator'] == TARGET.denominator, 'target denominator mismatch')
     for rel, digest in manifest['sha256'].items():
-        require(hashlib.sha256((ROOT / rel).read_bytes()).hexdigest() == digest,
+        path = (ROOT / rel).resolve()
+        require(path.is_relative_to(ROOT), 'manifest path escapes package')
+        require(hashlib.sha256(path.read_bytes()).hexdigest() == digest,
                 f'hash mismatch: {rel}')
     parameters = json.loads((ROOT / 'parameters.json').read_text())
-    intervals = json.loads((ROOT / 'intervals.json').read_text())
-    records = json.loads((ROOT / 'records.json').read_text())
-    require(len(intervals) == len(records) == 5120, 'expected 5120 intervals and records')
+    require(parameters['segments'] == 160 and parameters['denominator'] == 10**10,
+            'common parameter format mismatch')
+    intervals = [{'source': f'proposals/t{2*j:06d}_w2.in', 'N': 10240,
+                  'lo': 2*j, 'width': 2} for j in range(5120)]
+    require({p.name for p in (ROOT / 'proposals').glob('*.in')} ==
+            {Path(row['source']).name for row in intervals}, 'proposal coverage mismatch')
     expected = None
     for source in sorted({x['source'] for x in intervals}):
         require(not Path(source).is_absolute() and '..' not in Path(source).parts
@@ -82,70 +84,74 @@ def audit():
     require(list(expected[320:480]) == parameters['kappa_numerators'], 'kappa parameters mismatch')
     require(Fraction(sum(expected[:160]), 160 * 10**10) == Fraction(parameters['theta_0']),
             'threshold height mismatch')
-    for j, (x, y) in enumerate(zip(intervals, records)):
-        require(x['N'] == 10240 and x['lo'] == 2*j and x['width'] == 2,
-                f'incomplete or inconsistent interval coverage: {j}')
-        require(x['lo'] // 64 == (x['lo'] + 1) // 64, f'interval crosses a threshold knot: {j}')
-        require(all(x[k] == y[k] for k in ('source', 'N', 'lo', 'width')),
-                f'input and record assignment mismatch: {j}')
-        require(y['status'] == 'PASS', f'saved record did not pass: {j}')
-        require(Fraction(int(y['lower_numerator']), int(y['denominator'])) >= TARGET,
-                f'saved record below target: {j}')
-    minimum = min(Fraction(int(y['lower_numerator']), int(y['denominator'])) for y in records)
-    require(minimum == Fraction(int(manifest['minimum_numerator']), int(manifest['minimum_denominator'])),
-            'manifest minimum mismatch')
-    print(f'AUDIT PASS: target={TARGET} ({float(TARGET)}), all 5120 intervals, common parameters, plane budgets, hashes and coverage.', flush=True)
-    return intervals, records, minimum
+    for j, row in enumerate(intervals):
+        require(row['lo'] == 2*j and row['lo']//64 == (row['lo']+1)//64,
+                f'interval coverage mismatch: {j}')
+    print('AUDIT PASS: all inputs, hashes, plane budgets, and 5,120 intervals.', flush=True)
+    return intervals
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--jobs', type=int, default=4)
     parser.add_argument('--audit-only', action='store_true')
-    parser.add_argument('--critical-only', action='store_true')
+    parser.add_argument('--output-dir', type=Path, default=ROOT / 'runs/recheck')
     args = parser.parse_args()
     if args.jobs <= 0:
         parser.error('--jobs must be positive')
-    intervals, records, minimum = audit()
+    intervals = audit()
     if args.audit_only:
         return
+    output_dir = args.output_dir.resolve()
+    require(not output_dir.exists() or not any(output_dir.iterdir()),
+            'output directory must be empty')
     ids = list(range(len(intervals)))
-    if args.critical_only:
-        worst = min(ids, key=lambda j: Fraction(int(records[j]['lower_numerator']), int(records[j]['denominator'])))
-        ids = sorted({0, worst, len(intervals)//2, len(intervals)-1})
-    with tempfile.TemporaryDirectory(prefix='ps160-article-replay-') as work:
+    with tempfile.TemporaryDirectory(prefix='ps160-verify-') as work:
         work = Path(work)
         exe = work / 'verify'
-        subprocess.run(['g++', '-O3', '-std=c++17', str(ROOT / 'sources/strict160_verify.cpp'), '-o', str(exe)], check=True)
+        subprocess.run(['g++', '-O3', '-std=c++17',
+                        str(ROOT / 'sources/strict160_verify.cpp'), '-o', str(exe)], check=True)
         def replay_shard(pair):
             k, selected = pair
             tasks, output = work / f'tasks{k}', work / f'output{k}.jsonl'
-            # The fixed proposal names contain no whitespace. Resolve them from
-            # ROOT so a space in a parent directory never enters the task format.
-            tasks.write_text('\n'.join(f"{intervals[j]['source']} 10240 {intervals[j]['lo']} 2" for j in selected) + '\n')
+            tasks.write_text('\n'.join(f"{intervals[j]['source']} 10240 {intervals[j]['lo']} 2"
+                                       for j in selected) + '\n')
             with output.open('w') as stream:
-                subprocess.run([str(exe), str(tasks), str(TARGET.numerator), str(TARGET.denominator), 'RECTANGLE_V1'],
+                subprocess.run([str(exe), str(tasks), str(TARGET.numerator),
+                                str(TARGET.denominator), 'RECTANGLE_V1'],
                                cwd=ROOT, stdout=stream, check=True)
             got = [json.loads(line) for line in output.read_text().splitlines()]
-            require(len(got) == len(selected), f'arithmetic replay record count: shard {k}')
+            require(len(got) == len(selected), f'record count mismatch: shard {k}')
             for j, row in zip(selected, got):
-                require(row['status'] == 'PASS', f'arithmetic replay did not pass: {j}')
-                for key in KEYS:
-                    require(row[key] == records[j][key], f'arithmetic replay mismatch: interval {j}, {key}')
+                require(all(row[key] == intervals[j][key] for key in ('source','N','lo','width')),
+                        f'computed interval assignment mismatch: {j}')
+                require(row['status'] == 'PASS' and int(row['denominator']) == 2**56,
+                        f'arithmetic verification failed: {j}')
+                require(Fraction(int(row['lower_numerator']), int(row['denominator'])) >= TARGET,
+                        f'computed lower bound below target: {j}')
             print(f'REPLAY PASS: shard {k}, {len(got)} intervals.', flush=True)
-            return len(got)
+            return list(zip(selected, got))
         jobs = min(args.jobs, len(ids))
         with ThreadPoolExecutor(max_workers=jobs) as pool:
-            count = sum(pool.map(replay_shard, [(j, ids[j::jobs]) for j in range(jobs)]))
-    print(json.dumps({'status': 'VERIFIED', 'target_numerator': TARGET.numerator,
-                      'target_denominator': TARGET.denominator, 'target_met': minimum >= TARGET,
-                      'exact_target_margin': str(minimum-TARGET),
-                      'complete_input_and_coverage_audit': True,
-                      'all_5120_arithmetic_checks_replayed': not args.critical_only,
-                      'arithmetic_checks_replayed': count,
-                      'minimum_numerator': str(minimum.numerator),
-                      'minimum_denominator': str(minimum.denominator),
-                      'minimum_decimal': float(minimum)}, indent=2))
+            shards = list(pool.map(replay_shard, [(j, ids[j::jobs]) for j in range(jobs)]))
+    rows = sorted(item for shard in shards for item in shard)
+    require([j for j, _ in rows] == ids, 'computed arithmetic coverage is incomplete')
+    records = [row for _, row in rows]
+    minimum = min(Fraction(int(row['lower_numerator']), int(row['denominator'])) for row in records)
+    require(minimum == EXPECTED_MINIMUM, 'computed minimum differs from the fixed certificate')
+    report = {'status': 'VERIFIED', 'target_numerator': TARGET.numerator,
+              'target_denominator': TARGET.denominator, 'target_met': minimum >= TARGET,
+              'exact_target_margin': str(minimum-TARGET),
+              'complete_input_and_coverage_audit': True,
+              'all_5120_arithmetic_checks_replayed': True,
+              'arithmetic_checks_replayed': len(records),
+              'minimum_numerator': str(minimum.numerator),
+              'minimum_denominator': str(minimum.denominator),
+              'minimum_decimal': float(minimum)}
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / 'records.json').write_text(json.dumps(records, indent=2) + '\n')
+    (output_dir / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps(report, indent=2))
 
 
 if __name__ == '__main__':

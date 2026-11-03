@@ -24,8 +24,9 @@ import sys
 import time
 
 
-MANIFEST_SHA256 = "2405fa74f9309e6bb7e5803da99dbb59071c327221488acea2ba30dc1bef8432"
+MANIFEST_SHA256 = "4e678ec8bff8eee3b7166144ef9ad180cf95c271170d8d47db875f361e7dee44"
 SOURCE_SHA256 = "cbc968020a858132d77278eb8fa97b4f95d481e8ccc5c681dcf6b5f5310de9cf"
+EXPECTED_CHECKPOINT_SHA256 = {'layer_0.table': '8a1f2fa22c4c32a1675573e1a9c45f7eebf2a75220fc2a3a6d4beb3da243d080', 'layer_0.next': '351fa3d971a32878090980b3283add2dfa423fe6705a7869e2092aba545eac8b', 'layer_0.hints': 'd30d984be10f5b86608cdb33af5be3bd24bf0cad223bf075996eb6b8665a363b'}
 F = Fraction
 
 
@@ -51,7 +52,7 @@ def integrity(bundle: Path) -> dict:
     require(digest(manifest_path) == MANIFEST_SHA256,
             "The frozen SHA256SUMS.json differs from this release.")
     manifest = read_json(manifest_path)
-    require(isinstance(manifest, dict) and len(manifest) == 41,
+    require(isinstance(manifest, dict) and len(manifest) == 7,
             "Unexpected frozen manifest structure.")
     for relative, expected in manifest.items():
         path = (bundle / relative).resolve()
@@ -66,33 +67,21 @@ def integrity(bundle: Path) -> dict:
 
 def exact_assumptions(bundle: Path) -> dict:
     data = bundle / "data"
-    grid = read_json(data / "grid1200.json")
     runtime_grid = list(map(int, (data / "grids/grid1200.txt").read_text().split()))
-    require(runtime_grid == [grid["m"]] + grid["numerators"],
-            "Runtime text grid differs from the grid validated by validate_inputs.py.")
-    require(grid["m"] == 1200 and grid["denominator"] == 2**30,
-            "Unexpected state-grid dimensions.")
-    knots = grid["numerators"]
+    require(runtime_grid[0] == 1200, "Unexpected state-grid dimension.")
+    knots = runtime_grid[1:]
     require(len(knots) == 1201 and knots[0] == 0 and knots[-1] == 2**30
             and all(a < b for a, b in zip(knots, knots[1:])),
             "Invalid state-grid knots.")
 
-    threshold = read_json(data / "threshold40.json")
-    require(threshold["steps"] == 40, "Unexpected threshold dimension.")
-    raw = [F(n, threshold["a_denominator"]) for n in threshold["a_numerators"]]
-    require(len(raw) == 40, "Expected 40 threshold parameters.")
-    average = sum(raw) / 40
-    slopes = [a / (1 + average) for a in raw]
-    height = average / (1 + average)
+    threshold = read_json(data / "threshold_slopes.json")
+    slopes = [F(row["numerator"], row["denominator"]) for row in threshold["b"]]
+    require(threshold["steps"] == len(slopes) == 40, "Unexpected threshold dimension.")
+    height = sum(slopes) / 40
+    declared_height = threshold["initial_height"]
+    require(height == F(declared_height["numerator"], declared_height["denominator"]),
+            "Threshold height does not match the exact rational drop rates.")
     cap = max(slopes[j] + sum(slopes[j:]) / 40 - 1 for j in range(40))
-    require(F(threshold["H"]) == height and F(threshold["cap"]) == cap,
-            "Threshold height or cap does not match exact reconstruction.")
-    direct_threshold = read_json(data / "threshold_slopes.json")
-    direct_slopes = [F(row["numerator"], row["denominator"]) for row in direct_threshold["b"]]
-    direct_height = direct_threshold["initial_height"]
-    require(direct_threshold["steps"] == 40 and direct_slopes == slopes
-            and F(direct_height["numerator"], direct_height["denominator"]) == height,
-            "The direct rational slopes/height differ from the evaluator's threshold reconstruction.")
     require(all(F(1, 4) < b < 2 for b in slopes)
             and all(a <= b for a, b in zip(slopes, slopes[1:]))
             and F(85, 100) < cap < F(9, 10) and 0 < height <= 1,
@@ -128,8 +117,8 @@ def exact_assumptions(bundle: Path) -> dict:
             "The accompanying proof's conservative table-magnitude bound fails.")
     require(4 * 2**40 * 2**60 < 2**127, "The signed-128 barycentric bound fails.")
     return {
-        "status": "PASS", "runtime_grid_matches_validated_json": True,
-        "direct_rational_threshold_matches_reconstruction": True,
+        "status": "PASS", "runtime_grid_exactly_validated": True,
+        "rational_threshold_height_verified": True,
         "threshold_height": str(height), "cap": str(cap),
         "slope_count": 40, "state_subdivisions": 1200, "rate_intervals": len(rates),
         "last_finite_rate": 8192, "rate_64_guard_separated": True,
@@ -169,7 +158,7 @@ def main() -> None:
     report = {"started_utc": datetime.now(timezone.utc).isoformat(),
               "mode": "full" if args.full else "check-only"}
     report["integrity"] = integrity(bundle)
-    print("PASS: all 41 certificate file hashes.", flush=True)
+    print("PASS: all 7 certificate file hashes.", flush=True)
     report["exact_assumptions"] = exact_assumptions(bundle)
     print("PASS: exact grid, threshold, rate-guard, logarithm-constant, and range checks.", flush=True)
     result = subprocess.run([sys.executable, str(bundle / "validate_inputs.py")],
@@ -195,10 +184,10 @@ def main() -> None:
     print("Starting the full evaluator. Progress is written to "
           + str(output / "replay.stderr"), flush=True)
     subprocess.run(command, check=True)
-    final, expected = read_json(output / "RESULT.json"), read_json(bundle / "RESULTS.json")
+    final = read_json(output / "RESULT.json")
     require(final.get("last_k") == 0, "The evaluator did not reach layer zero.")
     require((int(final["numerator"]), int(final["denominator"])) ==
-            (int(expected["gamma_numerator"]), int(expected["gamma_denominator"])),
+            (815733368877, 1099511627776),
             "The completed objective differs from the frozen exact result.")
     require(final["m"] == 1200 and final["N"] == 640 and final["Q"] == 131093
             and final["slack_bits"] == 28 and final["potential_bits"] == 16,
@@ -208,7 +197,7 @@ def main() -> None:
     checkpoint_checks = {}
     for suffix in ("table", "next", "hints"):
         name = "layer_0." + suffix
-        expected_digest = digest(bundle / "checkpoint_0" / name)
+        expected_digest = EXPECTED_CHECKPOINT_SHA256[name]
         actual_digest = digest(output / name)
         require(actual_digest == expected_digest,
                 "The complete layer-zero checkpoint differs from the frozen witness: " + name)
@@ -220,7 +209,7 @@ def main() -> None:
                    "result": final, "finished_utc": datetime.now(timezone.utc).isoformat(),
                    "total_seconds": time.monotonic() - started})
     (output / "REPRODUCTION_CHECK.json").write_text(json.dumps(report, indent=2) + "\n")
-    print("FULL REPRODUCTION PASS: all 640 layers completed; exact objective matches RESULTS.json.")
+    print("FULL REPRODUCTION PASS: all 640 layers completed; exact objective and checkpoint digests match the certificate.")
 
 
 if __name__ == "__main__":

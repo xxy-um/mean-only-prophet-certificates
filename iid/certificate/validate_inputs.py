@@ -12,22 +12,23 @@ if not __debug__ or os.environ.get('PYTHONOPTIMIZE'):
 HERE=Path(__file__).resolve().parent/'data'
 header=Path(sys.argv[1]) if len(sys.argv)>1 else HERE/'coeff_N640_Q131093.h'
 rates_file=Path(sys.argv[2]) if len(sys.argv)>2 else HERE/'rates_refined_Q131093.json'
-grid_file=Path(sys.argv[3]) if len(sys.argv)>3 else HERE/'grid1200.json'
-text=header.read_text(); data=json.loads((HERE/'threshold40.json').read_text())
+grid_file=Path(sys.argv[3]) if len(sys.argv)>3 else HERE/'grids/grid1200.txt'
+text=header.read_text(); data=json.loads((HERE/'threshold_slopes.json').read_text())
 N,Q=map(int,re.search(r'N=(\d+),Q=(\d+)',text).groups())
 assert N>=320 and N%data['steps']==0
-eta=F(1,2**48);U=2**40;sub=N//data['steps'];a=[F(v,data['a_denominator']) for v in data['a_numerators']]
-assert len(a)==data['steps']==40
-P=sum(a)/40;b=[v/(1+P) for v in a];height=P/(1+P)
+eta=F(1,2**48);U=2**40;sub=N//data['steps']
+b=[F(v['numerator'],v['denominator']) for v in data['b']]
+assert len(b)==data['steps']==40
+height=sum(b)/40
+assert height==F(data['initial_height']['numerator'],data['initial_height']['denominator'])
 threshold=[sum(b[k//sub:])/40-F(k%sub,N)*b[k//sub] for k in range(N)]+[F(0)]
 cap=max(b[j]+threshold[j*sub]-1 for j in range(40))
 assert F(85,100)<cap<F(9,10) and all(F(1,4)<v<2 for v in b)
 rates=json.loads(rates_file.read_text()); rr=[F(v,rates['denominator']) for v in rates['numerators']]
 assert Q==len(rr)==rates['Q'] and rr[0]==0 and all(v<w for v,w in zip(rr,rr[1:])) and rr[-1]<8193
-knots=json.loads(grid_file.read_text());kk=knots['numerators'];assert len(kk)==knots['m']+1 and kk[0]==0 and kk[-1]==knots['denominator']==2**30 and all(v<w for v,w in zip(kk,kk[1:]))
-grid_header=grid_file.with_suffix('.h').read_text()
-assert int(re.search(r'GRID_M=(\d+)',grid_header).group(1))==knots['m']
-assert [int(v) for v in re.search(r'GRID_KNOTS\[\]=\{([^}]*)\}',grid_header).group(1).split(',')]==kk
+grid_values=list(map(int,grid_file.read_text().split()))
+knots={'m':grid_values[0],'numerators':grid_values[1:],'denominator':2**30}
+kk=knots['numerators'];assert knots['m']==1200 and len(kk)==knots['m']+1 and kk[0]==0 and kk[-1]==2**30 and all(v<w for v,w in zip(kk,kk[1:]))
 # Header constants are converted exactly from their finite hexadecimal strings.
 def exacthex(s):
     return F.from_float(float.fromhex(s))

@@ -1,46 +1,68 @@
-# Mean-only Prophet Inequalities
+# Mean-only Prophet Inequalities: numerical certificates
 
-This repository contains the numerical certificates and supplementary verification proofs for **Mean-only Prophet Inequalities**. Each directory is self-contained and has its own reproduction instructions and integrity manifest.
+Exact certificate inputs, verification programs, and supplementary correctness proofs.
 
-| Directory | Certified result | Supplementary proof | Manuscript location |
-| --- | --- | --- | --- |
-| [iid/](iid/) | I.I.D. lower bound: `815733368877 / 1099511627776 > 0.7419` | [Verification PDF](iid/docs/verification.pdf) | Section 3.3; Appendix A.1 |
-| [ps/](ps/) | Prophet secretary lower bound: `49839735470020217 / 72057594037927936 > 0.6916` | [Verification PDF](ps/Verification.pdf) | Section 4; Appendix B.2 |
-| [c2/](c2/) | Finite dual witness: `U_hat <= 0.741966695100 < 0.741967` | [Verification PDF](c2/docs/Verification%20of%20the%20Appendix%20C.2%20Certificate.pdf) | Appendix C.2; Lemmas C.11 and C.12 |
+| Directory | Certified result | Correctness proof |
+| --- | --- | --- |
+| `iid/` | `815733368877 / 1099511627776 > 0.7419` | [IID verification](iid/docs/verification.pdf) |
+| `ps/` | `49839735470020217 / 72057594037927936 > 0.6916` | [PS verification](ps/Verification.pdf) |
+| `c2/` | `U_hat <= 0.741966695100 < 0.741967` | [C2 verification](c2/docs/Verification%20of%20the%20Appendix%20C.2%20Certificate.pdf) |
+
+## Requirements
+
+Python 3.10 or later; no external Python packages. IID and PS also require
+GNU C++17 with signed 128-bit integers (`g++`); IID additionally requires OpenMP.
+IID requires binary64 round-to-nearest arithmetic with gradual underflow.
+Run Python without `-O` or `PYTHONOPTIMIZE`. Use the supplied compiler options;
+do not enable fast-math, floating-point contraction, or disabled C++ assertions.
 
 ## Verification
 
-Run these commands from the repository root. Python 3.10 or later suffices for all three packages. The IID and PS packages also require GNU C++17 with signed 128-bit integers; IID additionally uses OpenMP. C2 requires only the Python standard library.
+Run from the repository directory containing this README:
 
 ```sh
-# IID: validate the frozen inputs, then reproduce all 640 backward layers.
-python3 iid/reproduce.py --check-only
 python3 iid/reproduce.py --full --threads 8
-
-# PS: audit all inputs, then reproduce all 5,120 arithmetic records.
-python3 ps/replay.py --audit-only
 python3 ps/replay.py --jobs 8
-
-# C2: recompute all 1,025 weighted coefficient bounds.
 python3 c2/verify_certificate.py --output-dir c2/runs/recheck
 ```
 
-The full IID run takes tens of minutes and needs approximately 1.5 GB of free disk space. See [IID reproduction instructions](iid/REPRODUCE.md), [PS instructions](ps/README.md), and [C2 instructions](c2/README.md) for requirements, output locations, additional checks, and the meaning of successful verification. Input checks and selected-row diagnostics do not replace a full arithmetic replay.
+The IID command validates every frozen coefficient, reconstructs all 640 backward
+layers, and checks the exact objective and final checkpoint digests. Reserve about
+1.5 GB for generated outputs and allow tens of minutes. Its output directory is
+`iid/runs/reproduction/`; resume an interrupted run with the same command plus
+`--resume`, or select a fresh location with `--output`.
+
+The PS command verifies all 5,120 complete stopping-time intervals and all
+10,241 suffix constraints per interval. It computes fresh arithmetic records and
+checks their exact minimum. Outputs go to `ps/runs/recheck/`; select a fresh
+location with `--output-dir` for another run.
+
+The C2 command computes all 1,025 weighted coefficient bounds with integer
+interval arithmetic. It writes the bound, coefficient intervals, and log to its
+specified output directory. The cache may require substantial memory.
+
+All three commands must exit successfully. The exact accepted results are shown
+in the table above. Runtime output is generated locally and is not an input.
+
+For input checks only, use `python3 iid/reproduce.py --check-only` or
+`python3 ps/replay.py --audit-only`. These shorter commands do not perform the
+complete numerical verification.
 
 ## Mathematical scope
 
-The IID certificate proves feasibility for the paper's original fixed-coefficient factor-revealing LP. The analytical transfer to every finite input length is established separately in Appendix A.2 of the manuscript.
+The IID certificate proves feasibility of the original FRLP in Section 3.3 and
+Appendix A.1. Appendix A.2 of the paper supplies the transfer to every finite n.
+The PS certificate verifies the original pointwise criterion in Section 4 and
+Appendix B.2. The C2 certificate supplies the finite dual witness in Lemma C.11;
+Lemma C.12 gives the finite-n bound `exp(1/n) U + eta`, for every positive `eta`,
+under its size condition (`n >= 1,000,000,001` for this witness). Its asymptotic
+upper bound concerns the specified precommitted threshold class.
 
-The PS certificate checks one fixed affine lower bound over each complete stopping-time interval and all probability suffix constraints, including the empty suffix. Its final rational proposals can also be reconstructed from the supplied frozen candidate inputs and schedule.
+The three proof PDFs are part of the verification argument. No optimality of a
+numerical witness or reconstruction of the exploratory search is claimed.
 
-The C2 witness concerns the paper's precommitted deterministic, continuous, strictly decreasing threshold rules under independent uniform arrival times. The value `0.741967` is an asymptotic upper bound for this class. For finite input size, Lemma C.12 gives `exp(1/n) U + eta`, for every positive `eta`, subject to its size condition; the supplied witness requires `n >= 1,000,000,001`.
+## File integrity
 
-The supplementary PDFs prove the numerical implementation and error bounds used by the verifiers. They are part of the certification argument. None of the packages claims optimality of its numerical witness or reconstruction of the exploratory optimization search.
-
-## Files and integrity
-
-The three supplementary verification proofs are supplied as PDFs. No LaTeX installation is needed for numerical verification.
-
-Exact inputs, numerical verifier sources, and recorded numerical evidence are included. Check the distributed files against [IID checksums](iid/checksums.sha256), [PS certificate manifest](ps/certificate.json), and [C2 checksums](c2/SHA256SUMS) before changing them.
-
-Manuscript metadata identifies the work by its title, **Mean-only Prophet Inequalities**.
+From this directory, run `sha256sum -c SHA256SUMS`, or on macOS,
+`shasum -a 256 -c SHA256SUMS`. The verifiers also check their required numerical
+inputs. Generated output directories are not part of the distributed package.
