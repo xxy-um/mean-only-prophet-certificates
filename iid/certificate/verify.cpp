@@ -15,7 +15,7 @@
 #endif
 static_assert(FLT_RADIX==2 && DBL_MANT_DIG>=53, "binary64 or better required");
 #ifndef COEFFICIENT_FILE
-#define COEFFICIENT_FILE "coefficients_N640_Q65547_validated.h"
+#define COEFFICIENT_FILE "coeff_N640_Q131093.h"
 #endif
 #include COEFFICIENT_FILE
 using namespace std;

@@ -1,11 +1,11 @@
 {
-  "started_utc": "2026-11-03T06:12:59.476716+00:00",
+  "started_utc": "2026-11-03T08:17:06.669731+00:00",
   "mode": "check-only",
   "integrity": {
     "status": "PASS",
-    "manifest_sha256": "0b473839868b90d9faf20c62a63d4bb252d0e21fd02a73492715ae3dc797a159",
+    "manifest_sha256": "2405fa74f9309e6bb7e5803da99dbb59071c327221488acea2ba30dc1bef8432",
     "files_checked": 41,
-    "source_sha256": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219"
+    "source_sha256": "cbc968020a858132d77278eb8fa97b4f95d481e8ccc5c681dcf6b5f5310de9cf"
   },
   "exact_assumptions": {
     "status": "PASS",
@@ -38,8 +38,8 @@
     "H": "57507834299659/77507834299659",
     "cap": "133422326965109/155015668599318",
     "header_sha256": "78f7f85883cc353edc073e51a90b302b780f5cb89fa6dd90b7dcbccbd235e8f5",
-    "seconds": 126.83211318899976
+    "seconds": 210.68989554299878
   },
-  "preflight_seconds": 129.91497329499998,
+  "preflight_seconds": 221.05509085599988,
   "complete_backward_run_replayed": false
 }

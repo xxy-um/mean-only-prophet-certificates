@@ -140,7 +140,7 @@ static Bound evaluate(const Proposal& p,int N,int lo,int width){
 }
 int main(int argc,char** argv){
  try{
-  if(argc!=5)throw std::runtime_error("usage: clean_verify TASKS TARGET_NUM TARGET_DEN");
+  if(argc!=5)throw std::runtime_error(std::string("usage: ")+argv[0]+" TASKS TARGET_NUM TARGET_DEN RECTANGLE_V1");
   std::ifstream tasks(argv[1]);int64_t tn=std::stoll(argv[2]),td=std::stoll(argv[3]);
   // argv[4] is the fixed format version, preventing accidental old CLI use.
   if(!tasks||td<=0||std::string(argv[4])!="RECTANGLE_V1")throw std::runtime_error("tasks, target or version");

@@ -15,7 +15,7 @@
 
 The complete supplementary argument is supplied in `Verification.pdf`. This distribution includes the compiled proof PDF only.
 
-The numerical parameters, proposal files, arithmetic records, C++ verifier, and deterministic assembly rule are unchanged. The Python launchers validate inputs explicitly, including under optimized Python execution, and the replay command supports repository paths containing spaces. These maintenance changes do not change the certified mathematical instance or acceptance target.
+The numerical parameters, proposal files, arithmetic records, C++ verification logic, and deterministic assembly rule are unchanged. The verifier's usage message now displays the actual executable and includes the required `RECTANGLE_V1` argument. The Python launchers validate inputs explicitly, including under optimized Python execution, and the replay command supports repository paths containing spaces. These maintenance changes do not change the certified mathematical instance or acceptance target.
 
 ## Manuscript consistency
 

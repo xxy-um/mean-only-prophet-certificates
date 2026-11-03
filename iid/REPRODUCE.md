@@ -27,7 +27,7 @@ Passing these checks establishes the stated input enclosures. It does not by its
 python3 reproduce.py --full --threads 8
 ```
 
-The program checks the inputs, compiles the original evaluator, and evaluates all layers from `k=639` through `k=0`. It accepts the numerical result only if the exact numerator and denominator match the recorded certificate. Decimal output is for display.
+The program checks the inputs, compiles the released evaluator, and evaluates all layers from `k=639` through `k=0`. It accepts the numerical result only if the exact numerator and denominator match the recorded certificate. Decimal output is for display. By default, checkpoints and logs are written to `runs/reproduction/` in this `iid/` directory.
 
 The launcher refuses a nonempty output directory unless resuming an existing run. To select an output directory or compiler, see:
 
@@ -47,8 +47,8 @@ The output includes the exact final result, source/input identities, compiler co
 
 `certificate/audit/README.md` documents the long-double diagnostic scanner and the exact-rational interval row checker. The diagnostic scanner inspects every rate row at selected states. The rational checker rigorously encloses specified rows. Neither selected-state procedure replaces the complete backward proof and full evaluation.
 
-The release's `validation/README.md` distinguishes dated full-run and independent-check evidence from current packaging and preflight checks. The numerical evaluator, input data, and checkpoints match the historical full-run records. Historical records inside `certificate/audit/` retain their numerical results; workspace prefixes have been removed from path labels as documented in its README.
+The release's `validation/README.md` distinguishes dated full-run and independent-check evidence from current packaging and preflight checks, and explains the evaluator's corrected default header filename. The evaluation logic, input data, and checkpoints match the historical full-run records. Historical records inside `certificate/audit/` retain their numerical results; workspace prefixes have been removed from path labels as documented in its README.
 
 ## Verification proof
 
-The proof is supplied as `docs/verification.pdf`. LaTeX sources are not included in this distribution; source and compilation remarks within the PDF describe its preparation. No LaTeX installation is needed to run the numerical verification commands above.
+The proof is supplied as `docs/verification.pdf`. No LaTeX installation is needed to run the numerical verification commands above.

@@ -17,7 +17,9 @@
   "new_reward_bound_used": false,
   "time_interpolation_used": false,
   "optimality_claimed": false,
-  "source_sha256": "ab22ff5b67571201a998c76c5af420f0a1c05f631513bffa878067ae1655c55b",
+  "source_sha256": "5789cad2063f54dfd8187fd46c8d2cc0be68558a015108b1ace6df6ab744e914",
   "max_shard_seconds": 204.00118382100482,
-  "target_decimal": 0.6916
+  "target_decimal": 0.6916,
+  "historical_run_source_sha256": "ab22ff5b67571201a998c76c5af420f0a1c05f631513bffa878067ae1655c55b",
+  "source_revision_note": "Only the usage message changed to display the actual executable and include RECTANGLE_V1. Numerical verification code and arithmetic records are unchanged; max_shard_seconds describes the historical full replay."
 }

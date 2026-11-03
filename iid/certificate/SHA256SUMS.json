@@ -1,6 +1,6 @@
 {
-  "README.md": "3875627791030de3300b5b51396cb148889f2ceef22ddc54d358d519880b00ad",
-  "RESULTS.json": "91c6048f6aec720af667ec8f9bd6c7c3e4d3fc2e6da80a2a6192ef4baa512f03",
+  "README.md": "145a91b538fd813bd43092ae507077db978d0fd838987fcffc3962fafcc52bd1",
+  "RESULTS.json": "6acc0cfc398140255b01e710c20720f963041aa7ad7392680f13084c541f5ed6",
   "audit/ARITHMETIC_CHECKS.json": "6e9b6abe62f518aba9d8d6256ca4449bd0abd979f2edd4958851005e1a4642d3",
   "audit/FINAL_RESULT_CHECK.json": "beb1bf5b6efbec62c60c4e1c261743666fdcda1a4ea22303d401c288ce372123",
   "audit/FINAL_RUN_COMPLETION.json": "d2fe6127735b2756ce8e71a14612a0cbe1d1bfaae69de665e5517def283fa7cd",
@@ -9,8 +9,8 @@
   "audit/FINAL_RUN_RESULT.json": "0c43cc0c7fdb3addf0a551984bb8c7a7242d753a645dc2a3f6d30c12dae0ba92",
   "audit/INPUT_VALIDATION.json": "1ccd8af50d1e615e2679a180b655f0230af9deb00d4c7c1e364db9759504507c",
   "audit/PACKAGE_INPUT_COPY.json": "7f0b3306b0bd3d42ecc7f7e88bdc5a6eb6500ffdc2d557f070d0a50a8ad832e4",
-  "audit/README.md": "0c155b9a6db488349833e8ea1f11d0ef789a360d3c4e70ae76cc1381c37f2f4c",
-  "audit/candidate_320_example.json": "c5f7a8f49a7907900278d87582a944082704a8fe24f5f343f7f72d44e7b1a57c",
+  "audit/README.md": "e29e9acdef6e12f24ab76911f039a402b705959e3f0fc20b334ce9d5c454ad28",
+  "audit/candidate_320_example.json": "b2480b6640297d6c7049c586e360f2a09c4adbd7659abaa96e75e2a7b9e7dd64",
   "audit/check_exact_row.py": "326bd107b73f693f1baf5fb2ee892f7449967f9c9cdf4acc202940679e682fa4",
   "audit/check_selected_exact.py": "77e1eb6dba56df6a68d42865cb3928ce58a9cc4fa6d11d8de3a322d27d046559",
   "audit/potential16_final0_exact.json": "da0fa1375008e616144f25b1f75939c7be6a85e3d75f252b0970242689cbd8a4",
@@ -39,5 +39,5 @@
   "data/threshold_slopes.json": "bb6db32c572ca4cb9e2ae892e996bcffcdccc6176f91def6eeab60bf0bf2f0d6",
   "run.py": "ad54ef7a1530616b49cb7904d45a96c75e3cb2bda5244220b3abf73547b01b0b",
   "validate_inputs.py": "e591563357e3f122a0abcce2aea7b03f0e6d213f20870f99a8ab8aa68c2600f5",
-  "verify.cpp": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219"
+  "verify.cpp": "cbc968020a858132d77278eb8fa97b4f95d481e8ccc5c681dcf6b5f5310de9cf"
 }

@@ -39,7 +39,7 @@ The supplementary PDFs prove the numerical implementation and error bounds used 
 
 ## Files and integrity
 
-The three supplementary verification proofs are distributed as compiled PDFs only. LaTeX source and compilation remarks within the PDFs describe their preparation; those sources are not included in this distribution.
+The three supplementary verification proofs are supplied as PDFs. No LaTeX installation is needed for numerical verification.
 
 Exact inputs, numerical verifier sources, and recorded numerical evidence are included. Check the distributed files against [IID checksums](iid/checksums.sha256), [PS certificate manifest](ps/certificate.json), and [C2 checksums](c2/SHA256SUMS) before changing them.
 

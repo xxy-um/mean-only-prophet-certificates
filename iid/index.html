@@ -60,7 +60,7 @@
 
   <h2>What the proof establishes</h2>
   <p>The supplement justifies pruning through bounds valid for every original constraint in a rate subtree. It also proves that the table adjustments, numerical interpolation, and arithmetic error allowances preserve feasibility. The threshold and all rate and state grids are fixed rational inputs.</p>
-  <p>The numerical evaluator, exact inputs, and checkpoints are unchanged. The proof is the primary implementation justification. The current manifests cover the guarded launchers, documentation, and historical records as distributed.</p>
+  <p>The evaluation logic, exact inputs, and checkpoints are unchanged. The evaluator's default coefficient-header filename has been corrected; the validation README explains the source-hash change. The proof is the primary implementation justification. The current manifests cover the distributed files.</p>
 
   <h2>Files</h2>
   <table>
@@ -70,7 +70,7 @@
       <tr><td><a href="certificate/README.md">Certificate data and code</a></td><td>Exact inputs, numerical evaluator, launcher, checkpoints, and historical records.</td></tr>
       <tr><td><a href="reproduce.py" download>Release reproduction script</a></td><td>Integrity checks, exact input assumptions, and complete replay with exact-result comparison.</td></tr>
       <tr><td><a href="REPRODUCE.md">Reproduction instructions</a></td><td>Requirements, commands, output interpretation, and independent row checks.</td></tr>
-      <tr><td><a href="validation/FULL_REPRODUCTION.json">Full replay record</a></td><td>Dated result of the complete 640-layer reconstruction with the unchanged evaluator and inputs.</td></tr>
+      <tr><td><a href="validation/FULL_REPRODUCTION.json">Full replay record</a></td><td>Dated result of the complete 640-layer reconstruction with the same evaluation logic and inputs.</td></tr>
       <tr><td><a href="validation/INPUT_VALIDATION.json">Exact coefficient validation</a></td><td>Rational enclosure checks for every frozen coefficient.</td></tr>
       <tr><td><a href="validation/exact_assumptions.json">Exact preflight assumptions</a></td><td>Threshold and grid consistency, logarithm constant, rate guard, and integer ranges.</td></tr>
       <tr><td><a href="validation/INDEPENDENT_CHECKS.json">Additional independent checks</a></td><td>Explicitly scoped diagnostics and exact interval row checks.</td></tr>

@@ -20,8 +20,8 @@ It uses 40 threshold slopes, 640 time intervals, 1,200 state subdivisions in eac
 
 `validation/README.md` explains the scope and dates of the evidence;
 `validation/RELEASE_CHECKS.json` records the current packaging checks.
-The dated full-run and row-check records retain the historical executions of
-the unchanged numerical evaluator and inputs.
+The dated full-run and row-check records retain the historical executions with
+the same evaluation logic and numerical inputs.
 
 The proof follows the paper's notation. In particular, `N=40` denotes the number of threshold pieces in the mathematical document. The C++ constant named `N` denotes `N_t=640`; the source-to-paper mapping is given in the proof.
 
@@ -48,7 +48,7 @@ The first command checks integrity, the exact input relationships, and all froze
 | `PAPER_REFERENCE.json` | Manuscript title and frozen-source identity |
 | `checksums.sha256` | SHA-256 checksums for the complete release |
 
-The primary proof is `docs/verification.pdf`, distributed as a compiled PDF only. It supplies the implementation justification and numerical error analysis. The evaluator, exact numerical inputs, and frozen checkpoints are unchanged. The launchers reject disabled Python assertions; documentation and historical path labels have been normalized for this release. The current manifests cover the distributed files.
+The primary proof is `docs/verification.pdf`, distributed as a compiled PDF only. It supplies the implementation justification and numerical error analysis. The evaluation logic, exact numerical inputs, and frozen checkpoints are unchanged. The evaluator's default coefficient-header filename has been corrected; `validation/README.md` explains the source-hash change and historical records. The launchers reject disabled Python assertions. The current manifests cover the distributed files.
 
 The final rational inputs are supplied. The historical heuristic search that discovered the threshold is not needed to verify its guarantee and is not reconstructed by this package.
 

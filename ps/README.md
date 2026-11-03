@@ -67,7 +67,7 @@ This is deterministic reconstruction from supplied inputs. The earlier optimizat
 
 ## Verification proof
 
-The proof is distributed as `Verification.pdf` only. LaTeX sources are not included; source and compilation remarks within the PDF describe its preparation. No LaTeX installation is needed for numerical verification or proposal reconstruction.
+The proof is supplied as `Verification.pdf`. No LaTeX installation is needed for numerical verification or proposal reconstruction.
 
 ## Repository contents
 

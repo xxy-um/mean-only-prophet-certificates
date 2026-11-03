@@ -18,7 +18,7 @@
   "original_A1_leaf_rows_unchanged": true,
   "ancestor_row_replacement": false,
   "same_layer_raising": false,
-  "source_sha256": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219",
+  "source_sha256": "cbc968020a858132d77278eb8fa97b4f95d481e8ccc5c681dcf6b5f5310de9cf",
   "evaluator_seconds": 1858.7534589510033,
   "wall_seconds": 1858.7982323790056,
   "result": {
@@ -38,5 +38,7 @@
     "rate_rows_per_state": 131093,
     "all_scanned_rows_passed": true,
     "selected_final_rows_rationally_verified": 3
-  }
+  },
+  "historical_run_source_sha256": "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219",
+  "source_revision_note": "Only the default coefficient-header filename changed. The official build has identical preprocessed evaluation code. Timings and nested result fields describe the historical full run."
 }

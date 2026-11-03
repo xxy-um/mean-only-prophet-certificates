@@ -15,7 +15,7 @@ The target comparison is exact:
 
 The full run took about **31 minutes on eight threads**. This is a feasible lower bound; no LP optimality is claimed.
 
-The LP is the one constructed in Appendix A.1: each rate interval uses its lower endpoint for the A.2 continuation state and its upper endpoint for the applicable A.3 running-cost bounds, followed by the original grid's triangular interpolation. The fixed threshold has 40 slopes. The numerical dimensions are
+The LP is the one constructed in Appendix A.1: each rate interval uses its lower endpoint for the Lemma A.1 continuation state and its upper endpoint for the applicable Lemma A.2 running-cost bounds, followed by the original grid's triangular interpolation. The fixed threshold has 40 slopes. The numerical dimensions are
 
 - 640 time intervals;
 - 1,200 state subdivisions in each coordinate;
@@ -25,7 +25,7 @@ The backward evaluator uses conservative arithmetic and pruning that bounds the 
 
 ## Files
 
-- `verify.cpp`: the frozen evaluator source used for the completed run.
+- `verify.cpp`: the evaluator source, with the original arithmetic logic and corrected default coefficient-header filename.
 - `data/`: the exact threshold, state/rate grids, and frozen binary coefficients.
 - `validate_inputs.py`: exact rational validation of those coefficient inputs.
 - `run.py`: compilation and replay launcher.

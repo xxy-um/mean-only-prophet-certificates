@@ -4,7 +4,7 @@
   python3 reproduce.py --check-only
   python3 reproduce.py --full --threads 8
 
-The default is --check-only.  The numerical evaluator is unchanged.
+The default is --check-only.  The evaluation arithmetic is unchanged.
 Check-only verifies release integrity, exact input assumptions, and
 the exact-rational coefficient validator; it does not assert that
 the complete backward computation has been rerun.
@@ -24,8 +24,8 @@ import sys
 import time
 
 
-MANIFEST_SHA256 = "0b473839868b90d9faf20c62a63d4bb252d0e21fd02a73492715ae3dc797a159"
-SOURCE_SHA256 = "6cafb1fb9e1be830c8b2c8cd60304bb1e2c3496e3da5a3e7e2d47cb4b9a84219"
+MANIFEST_SHA256 = "2405fa74f9309e6bb7e5803da99dbb59071c327221488acea2ba30dc1bef8432"
+SOURCE_SHA256 = "cbc968020a858132d77278eb8fa97b4f95d481e8ccc5c681dcf6b5f5310de9cf"
 F = Fraction
 
 
@@ -192,7 +192,7 @@ def main() -> None:
                "--compiler", args.compiler, "--output", str(output), "--skip-input-validation"]
     if args.resume:
         command.append("--resume")
-    print("Starting the unchanged full evaluator. Progress is written to "
+    print("Starting the full evaluator. Progress is written to "
           + str(output / "replay.stderr"), flush=True)
     subprocess.run(command, check=True)
     final, expected = read_json(output / "RESULT.json"), read_json(bundle / "RESULTS.json")

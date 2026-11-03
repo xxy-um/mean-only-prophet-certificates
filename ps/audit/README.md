@@ -14,6 +14,10 @@ rounded displays.
   coverage checks. File counts and timings describe their recorded runs; the
   current release file list is in `../certificate.json`.
 
+Historical source hashes identify the verifier used for those runs. The current
+source corrects only the executable and required format argument in its usage message; its numerical
+verification logic and certificate data are unchanged.
+
 The supplementary proof in `../Verification.pdf` supplies the implementation
 and interval-arithmetic justifications. Numerical replay and checksum checks
 complement that proof.
